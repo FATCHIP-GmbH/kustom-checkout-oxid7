@@ -57,7 +57,7 @@ To set up the testing environment using the sdk-recipies, follow these steps:
 - add a test_config.yml to your shop root and configure it for the module:
 ```yaml
 mandatory_parameters:
-  partial_module_paths: kustom/oxid-v7
+  partial_module_paths: fatchip-gmbh/kustom-checkout-oxid7
   shop_path: /var/www/source
 
 optional_parameters:
