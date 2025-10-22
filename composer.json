@@ -1,5 +1,5 @@
 {
-  "name": "kustom/oxid-v7",
+  "name": "fatchip-gmbh/kustom-checkout-oxid7",
   "description": "Kustom Checkout module for OXID eShop version 7.X",
   "type": "oxideshop-module",
   "license": "Apache-2.0",

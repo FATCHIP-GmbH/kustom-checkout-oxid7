@@ -21,11 +21,11 @@ OXID eShop Plugin to integrate Kustom Checkout to OXID eShop Version >= 7.0.0
 
 In the shop's main folder ( the one with composer.json file) run this command:
 
-composer require kustom/oxid-v7:*
+composer require fatchip-gmbh/kustom-checkout-oxid7:*
 
 or add the following line within the "require" section to your composer.json file:
 
-"kustom/oxid-v7": "*"
+"fatchip-gmbh/kustom-checkout-oxid7": "*"
 
 and run
 
@@ -57,7 +57,7 @@ To set up the testing environment using the sdk-recipies, follow these steps:
 - add a test_config.yml to your shop root and configure it for the module:
 ```yaml
 mandatory_parameters:
-  partial_module_paths: kustom/oxid-v7
+  partial_module_paths: fatchip-gmbh/kustom-checkout-oxid7
   shop_path: /var/www/source
 
 optional_parameters:
