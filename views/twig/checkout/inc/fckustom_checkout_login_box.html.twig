@@ -1,0 +1,66 @@
+<div class="col-sm-6">
+    <div class="drop-container" id="kustomLoginWidget">
+        <div class="drop-trigger">
+            <div class="kustom-label">
+                <span class="glyphicon glyphicon-user pull-left" aria-hidden="true"></span>
+                <span class="kustom-login-label"> {{ translate({ ident: "FCKUSTOM_ALREADY_A_CUSTOMER" }) }}</span>
+                <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div class="drop-content">
+            {% set bIsError = 0 %}
+            {% capture name = "loginErrors" %}
+                {% for key, oEr in Errors.loginBoxErrors %}
+                    <p id="errorBadLogin" class="alert alert-danger">{{ oEr.getOxMessage()|raw }}</p>
+                    {% set bIsError = 1 %}
+                {% endfor %}
+            {% endcapture %}
+            <form class="form" name="login" action="{{ oViewConf.getSslSelfLink() }}"
+                  method="post">
+                <div id="loginBox" class="" {% if bIsError %}style="display: block;" {% endif %}>
+                    {{ oViewConf.getHiddenSid()|raw }}
+                    {{ oViewConf.getNavFormParams()|raw }}
+                    <input type="hidden" name="fnc" value="login_noredirect">
+                    <input type="hidden" name="cl" value="{{ oViewConf.getTopActiveClassName()|raw }}">
+                    <input type="hidden" name="pgNr" value="{{ oView.getActPage()|raw }}">
+                    <input type="hidden" name="CustomError" value="loginBoxErrors">
+
+                    <div class="mb-3 form-floating">
+                        <input type="email" name="lgn_usr" value=""
+                               class="form-control" id="fckco_iframe_lgn">
+                        <label for="fckco_iframe_lgn">{{ translate({ ident: "EMAIL_ADDRESS" }) }}</label>
+                    </div>
+
+                    <div class="mb-3 form-floating">
+                            <input type="password" name="lgn_pwd"
+                                   class="form-control"
+                                   value=""
+                                   id="fckco_iframe_pwd"
+                            >
+                            <label for="fckco_iframe_pwd">{{ translate({ ident: "PASSWORD" }) }}</label>
+                            <span class="input-group-btn">
+                                        <a class="forgotPasswordOpener btn btn-default"
+                                           href="{{ seo_url({ ident: oViewConf.getSslSelfLink()|cat("cl=forgotpwd") }) }}"
+                                           title="{{ translate({ ident: "FORGOT_PASSWORD" }) }}">{{ translate({ ident: "FORGOT_PASSWORD" }) }}</a>
+                                </span>
+                    </div>
+
+                    {% if oViewConf.isFunctionalityEnabled( "blShowRememberMe" ) %}
+                        <div class="checkbox checkbox-fix">
+                            <label>
+                                <input type="checkbox" class="checkbox-fix" value="1" name="lgn_cook">
+                                {{ translate({ ident: "REMEMBER_ME" }) }}
+                            </label>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary">
+                        {{ translate({ ident: "LOGIN" }) }}
+                    </button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

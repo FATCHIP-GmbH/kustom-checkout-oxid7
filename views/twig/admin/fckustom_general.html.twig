@@ -1,0 +1,440 @@
+{% set lang_tag = "" %}
+{% for language in languages %}
+    {% if (language.id is same as editlanguage) %}
+        {% set lang_tag = language.abbr|upper %}
+    {% endif %}
+{% endfor %}
+
+{% capture assign = "country_creds" %}
+    {% include "@fckustom/admin/fckustom_country_creds.html.twig" %}
+{% endcapture %}
+
+<script type="text/javascript">
+    {% if country_creds %}
+    var fckustom_countryCredsTemplate = '{{ country_creds|raw|escape("js") }}';
+    {% endif %}
+    {% if fckustom_countryList %}
+    var fckustom_countriesList = JSON.parse('{{ fckustom_countryList|raw }}');
+    {% endif %}
+</script>
+
+{% if readonly %}
+    {% set readonly = "readonly disabled" %}
+{% else %}
+    {% set readonly = "" %}
+{% endif %}
+
+<link rel="stylesheet" href="{{ oViewConf.getResourceUrl() }}main.css">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/fckustom_admin2.css') }}">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster.bundle.min.css') }}">
+<link rel="stylesheet"
+      href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster-sideTip-light.min.css') }}">
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jquery-1.12.4.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/tooltipster.bundle.min.js') }}"></script>
+
+<div class="{{ box|default('box') }}" style="{% if not box and not bottom_buttons %}height: 100%;{% endif %}">
+    <div class="main-container">
+        {% set tabName = "FCKUSTOM_BASIC_SETTINGS"|translate %}
+        {% include "@fckustom/admin/fckustom_header.html.twig" with {title: "FCKUSTOM_GENERAL_SETTINGS"|translate, desc: "FCKUSTOM_GENERAL_SETTINGS_ADMIN_DESC"|translate} %}
+        <hr>
+
+        <form name="myedit" id="myedit" method="post"
+              action="{{ oViewConf.getSelfLink()|raw }}"
+              enctype="multipart/form-data"
+              data-langs="{{ oView.getLangs()|raw }}">
+            <input type="hidden" name="MAX_FILE_SIZE" value="{{ iMaxUploadFileSize }}">
+            {{ oViewConf.getHiddenSid()|raw }}
+            <input type="hidden" name="cl" value="KustomGeneral">
+            <input type="hidden" name="fnc" value="save">
+
+            <div class="products-container">
+                <input type="radio" name="" id="mode_payment" checked="checked" value="KCO"/>
+                <label class="product" for="mode_payment">
+                    <div class="product-button"
+                         style="height: 60px; border-radius: 5px; text-align: center; line-height: 60px; font-size: 18px;">
+                        <span class="kl-mode-title">{{ translate({ ident: "FCKUSTOM_CHECKOUT_NAME" }) }}</span>
+                    </div>
+                    <p class="product-description"
+                       style="line-height: 1.619; color: #666;">{{ translate({ ident: "FCKUSTOM_CHECKOUT_DESC" }) }}</p>
+                    <i class="fa fa-check fa-2x" aria-hidden="true"></i>
+                </label>
+            </div>
+
+            <div class="kustom-expandable-list">
+                <table class="kustom-conf-table">
+                    <tr class="bg-grey">
+                        <td>Mode:</td>
+                        <td>
+                            <div class="input">
+                                <div class="selector" id="modeSelector">
+                                    <div class="selector__menu">
+                                        <ul class="selector__choices">
+                                            <li class="selector__item{% if confbools.blIsKustomTestMode == 0 %}--selected{% endif %}">
+                                                <a href="#" data-value="0">Live</a>
+                                            </li>
+                                            <li class="selector__item{% if confbools.blIsKustomTestMode == 1 %}--selected{% endif %}">
+                                                <a href="#" data-value="1">Playground</a>
+                                            </li>
+                                        </ul>
+                                        <input type="hidden" name="confbools[blIsKustomTestMode]"
+                                               value="{{ confbools.blIsKustomTestMode }}">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip" title="{{ translate({ ident: "FCKUSTOM_TEST_MODE_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>{{ translate({ ident: "FCKUSTOM_MERCHANT_ID" }) }}:</td>
+                        <td>
+                            <div class="input">
+                                <input type="text" class="" name="confstrs[sKustomMerchantId]"
+                                       value="{{ confstrs.sKustomMerchantId }}">
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip"
+                              title="{{ translate({ ident: "FCKUSTOM_GLOBAL_MERCHANT_ID_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{{ translate({ ident: "FCKUSTOM_PASSWORD" }) }}:</td>
+                        <td>
+                            <div class="input">
+                                <input type="password" class="" name="confstrs[sKustomPassword]"
+                                       value="{{ confstrs.sKustomPassword }}">
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip" title="{{ translate({ ident: "FCKUSTOM_GLOBAL_PASSWORD_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr class="bg-grey {% if not fckustom_countryCreds %}hidden{% endif %}" id="ycsc">
+                        <td class="center"
+                            colspan="3">{{ translate({ ident: "FCKUSTOM_YOUR_COUNTRY_SPECIFIC_CREDS" }) }}</td>
+                    </tr>
+
+                    {% if fckustom_countryCreds %}
+                        {% for sKey, aValues in fckustom_countryCreds %}
+                            {% include "@fckustom/admin/fckustom_country_creds.html.twig" %}
+                        {% endfor %}
+                    {% endif %}
+                    <tr class="bg-grey2" id="acc-separator">
+                        <td colspan="3" style="text-align: center;">
+                            <a id="add-country-creds" role="button">
+                                <i class="fa fa-plus fa-lg"
+                                   aria-hidden="true"></i> {{ translate({ ident: "FCKUSTOM_ADD_COUNTRY_SPECIFIC_CREDS" }) }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="no-padding" colspan="3">
+                            <div class="rows-wrapper">
+                                <table>
+                                    <tbody>
+                                    <tr class="accFormRow">
+                                        <td>{{ translate({ ident: "FCKUSTOM_COUNTRY" }) }}:</td>
+                                        <td>
+                                            <div class="selector" id="accSelector">
+                                                <div class="selector__menu">
+                                                    <ul class="selector__choices">
+                                                        {% if fckustom_notSetUpCountries %}
+                                                            {% for countryISO, title in fckustom_notSetUpCountries %}
+                                                                <li class="selector__item">
+                                                                    <a href="#"
+                                                                       data-value={{ countryISO }}>{{ title }}</a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="kl-tooltip"
+                                                  title="{{ translate({ ident: "FCKUSTOM_CREDENTIALS_COUNTRY_SELECTOR_TOOLTIP" }) }}">
+                                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="accFormRow">
+                                        <td>{{ translate({ ident: "FCKUSTOM_MERCHANT_ID" }) }}:</td>
+                                        <td>
+                                            <div class="input">
+                                                <input type="text" class="" name="" value="">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="kl-tooltip"
+                                                  title="{{ translate({ ident: "FCKUSTOM_CREDENTIALS_COUNTRY_MERCHANT_ID_TOOLTIP" }) }}">
+                                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="accFormRow">
+                                        <td>{{ translate({ ident: "FCKUSTOM_PASSWORD" }) }}:</td>
+                                        <td>
+                                            <div class="input">
+                                                <input type="password" class="" name="" value="">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="kl-tooltip"
+                                                  title="{{ translate({ ident: "FCKUSTOM_CREDENTIALS_COUNTRY_PASSWORD_TOOLTIP" }) }}">
+                                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="accFormRow">
+                                        <td class="center" colspan="3">
+                                            <button class="btn-save"
+                                                    id="acc-save">{{ translate({ ident: "FCKUSTOM_ADD" }) }}</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {{ translate({ ident: "FCKUSTOM_ENABLE_LOGGING" }) }}:
+                        </td>
+                        <td>
+                            <div class="input w356">
+                                <div class="display">
+                                    <label class="label toggle" for="LoggingEnabled">
+                                        <input type="hidden" name="confbools[blKustomLoggingEnabled]" value="0">
+                                        <input id="LoggingEnabled" type="checkbox" class="toggle_input"
+                                               name="confbools[blKustomLoggingEnabled]"
+                                               value="1"
+                                               {% if (confbools.blKustomLoggingEnabled) %}checked{% endif %} {{ readonly }}/>
+                                        <div class="toggle-control"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip" title="{{ translate({ ident: "FCKUSTOM_ENABLE_LOGGING_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr class="bg-grey no-b-border">
+                        <td>
+                            {{ translate({ ident: "FCKUSTOM_SEND_ADDITIONAL_PRODUCT_DATA" }) }}
+                        </td>
+                        <td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr class="bg-grey no-tb-border">
+                        <td class="fw-500">
+                            {{ translate({ ident: "FCKUSTOM_PRODUCT_URLS" }) }}
+                        </td>
+                        <td>
+                            <div class="input w356">
+                                <div class="display">
+                                    <label class="label toggle" for="SendProductUrls">
+                                        <input type="hidden" name="confbools[blKustomSendProductUrls]" value="0">
+                                        <input type="checkbox" class="toggle_input" id="SendProductUrls"
+                                               name="confbools[blKustomSendProductUrls]"
+                                               value="1"
+                                               {% if (confbools.blKustomSendProductUrls) %}checked{% endif %} {{ readonly }}/>
+                                        <div class="toggle-control"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip"
+                              title="{{ translate({ ident: "FCKUSTOM_SEND_PRODUCT_URLS_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr class="bg-grey no-t-border">
+                        <td class="fw-500">
+                            {{ translate({ ident: "FCKUSTOM_IMAGE_URLS" }) }}
+                        </td>
+                        <td>
+                            <div class="input w356">
+                                <div class="display">
+                                    <label class="label toggle" for="SendImageUrls">
+                                        <input type="hidden" name="confbools[blKustomSendImageUrls]" value="0">
+                                        <input type="checkbox" class="toggle_input"
+                                               name="confbools[blKustomSendImageUrls]"
+                                               value="1" id="SendImageUrls"
+                                               {% if (confbools.blKustomSendImageUrls) %}checked{% endif %} {{ readonly }}/>
+                                        <div class="toggle-control"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip"
+                              title="{{ translate({ ident: "FCKUSTOM_SEND_PRODUCT_IMAGES_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr class="">
+                        <td>
+                            {{ translate({ ident: "FCKUSTOM_ENABLE_ANONYMIZATION" }) }}:
+                        </td>
+                        <td>
+                            <div class="input w356">
+                                <div class="display">
+                                    <label class="label toggle" for="anonymized">
+                                        <input type="hidden" name="confbools[blKustomEnableAnonymization]" value="0">
+                                        <input id="anonymized" type="checkbox" class="toggle_input"
+                                               name="confbools[blKustomEnableAnonymization]"
+                                               value="1"
+                                               {% if (confbools.blKustomEnableAnonymization) %}checked{% endif %} {{ readonly }}/>
+                                        <div class="toggle-control"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                        <span class="kl-tooltip"
+                              title="{{ translate({ ident: "FCKUSTOM_ENABLE_ANONYMIZATION_TOOLTIP" }) }}">
+                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr class="b-border">
+                        <td colspan="3" style="padding: 0;">
+                            <div class="rows-wrapper"
+                                 style="{% if (confbools.blKustomEnableAnonymization) %}display: block;{% endif %}">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td class="fw-500">{{ translate({ ident: "GENERAL_LANGUAGE" }) }}</td>
+                                        <td>
+                                            <div class="input">
+                                                <div class="selector" id="langSelector">
+                                                    <div class="selector__menu">
+                                                        <ul class="selector__choices">
+                                                            {% for lang, olang in languages %}
+                                                                <li class="selector__item{% if lang == editlanguage %}--selected{% endif %}">
+                                                                    <a href="#"
+                                                                       data-value="{{ lang }}">{{ olang.name }}</a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        <input type="hidden" name="editlanguage" id="editlanguage"
+                                                               class="saveinnewlanginput"
+                                                               value="{{ editlanguage }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-500">{{ translate({ ident: "FCKUSTOM_ANONYMIZED_PRODUCT" }) }}</td>
+                                        <td>
+                                            <div class="input">
+                                                {% set confVarName = "sKustomAnonymizedProductTitle_"|cat(lang_tag) %}
+                                                <input id="anonymized-value" type="text" class="" data-default-value=""
+                                                       name="confaarrs[aarrKustomAnonymizedProductTitle][{{ confVarName }}]"
+                                                       value="{% if confaarrs.aarrKustomAnonymizedProductTitle[confVarName] != "" %}{{ confaarrs.aarrKustomAnonymizedProductTitle[confVarName] }}{% endif %}">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="kl-tooltip"
+                                                  title="{{ translate({ ident: "FCKUSTOM_ANONYMIZED_PRODUCT_TOOLTIP" }) }}">
+                                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{{ translate({ ident: "FCKUSTOM_CUSTOMER_TYPE" }) }}</td>
+                        <td>
+                            <div class="input">
+                                <div class="selector" id="b2optionSelector">
+                                    <div class="selector__menu">
+                                        <ul class="selector__choices">
+                                            {% for name in b2options %}
+                                                <li class="selector__item{% if confstrs.sKustomB2Option == name %}--selected{% endif %}">
+                                                    <a href="#" data-value="{{ name }}">
+                                                        {{ translate({ ident: "FCKUSTOM_"|cat(name) }) }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <input type="hidden" name="confstrs[sKustomB2Option]"
+                                               value="{{ confstrs.sKustomB2Option }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="kl-tooltip"
+                                  title="{{ translate({ ident: "FCKUSTOM_CUSTOMER_TYPE_TOOLTIP" }) }}">
+                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="messagebox info">{{ "FCKUSTOM_CHANGES_SAVED"|translate }}</div>
+                        </td>
+                    </tr>
+                    <tr class="dark">
+                        <td class="name">
+                            {{ translate({ ident: "FCKUSTOM_KCO_SHIPPINGMETHOD" }) }}
+                        </td>
+                        <td>
+                            <div class="input">
+                                <div class="selector" id="kcomethodSelector">
+                                    <div class="selector__menu">
+                                        <ul class="selector__choices">
+                                            {% for shippingId,oDelSet in kcoshippingmethods %}
+                                                <li class="selector__item{% if confstrs.sKustomKCOMethod == shippingId %}--selected{% endif %}">
+                                                    <a href="#" data-value="{{ shippingId }}">
+                                                        {{ oDelSet.oxdeliveryset__oxtitle.value|raw }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <input type="hidden" name="confstrs[sKustomKCOMethod]"
+                                               value="{{ confstrs.sKustomKCOMethod }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% include "@fckustom/admin/fckustom_lang_spec_conf.html.twig" %}
+                    <tr>
+                        <td class="center" colspan="3">
+                            <input type="submit" name="save" value="{{ translate({ ident: "GENERAL_SAVE" }) }}"
+                                   class="btn-save" id="form-save-button" {{ readonly }}>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+</div>
+<div style="height: 80px"></div>
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_admin_lib.js') }}"></script>
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_admin_general.js') }}"></script>

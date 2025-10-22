@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         bootstrap="../../../../vendor/oxid-esales/testing-library/bootstrap.php"
+         colors="true"
+         verbose="true"
+         beStrictAboutTestsThatDoNotTestAnything="false">
+
+    <testsuites>
+        <testsuite name="Kustom Module">
+            <directory>/var/www/vendor/kustom/oxid-v7/Tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage includeUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">../Component</directory>
+            <directory suffix=".php">../Controller</directory>
+            <directory suffix=".php">../Core</directory>
+            <directory suffix=".php">../Model</directory>
+        </include>
+    </coverage>
+
+    <php>
+        <const name="OXID_PHP_UNIT" value="true"/>
+    </php>
+</phpunit>

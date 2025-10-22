@@ -1,0 +1,7 @@
+{% extends "page/checkout/inc/steps.html.twig" %}
+
+{% block checkout_steps_main %}
+    {% if sPaymentId != 'kustom_checkout' %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

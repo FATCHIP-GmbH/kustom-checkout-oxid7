@@ -1,0 +1,80 @@
+<link rel="stylesheet" href="{{ oViewConf.getResourceUrl() }}main.css">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/fckustom_admin2.css') }}">
+<script type="text/javascript" src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jquery-1.12.4.min.js') }}"></script>
+
+<div class="{{ box|default('box') }} full-width" style="{% if not box and not bottom_buttons %}height: 100%;{% endif %}">
+    <div class="kustom-header bgimg">
+        <div class="w6">
+            <div class="kustom-logo-start">
+            </div>
+            <div class="kustom-inner">
+                <h1>{{ translate({ ident: "FCKUSTOM_EASY_AND_SECURE_SHOPPING" }) }}</h1>
+                <p>{{ "FCKUSTOM_WELCOME_TO_CONFIGURATION"|translate("kustomOxidLink") }}</p>
+                <div class="top-button-group">
+                    <div class="w50per">
+                        <a href="https://portal.kustom.co/onboarding?_gl=1*1ky1zur*_up*MQ..*_gs*MQ..*_gcl_aw*R0NMLjE3NTYyMDEyNjUuQ2p3S0NBand0clhGQmhCaUVpd0FFS2VuMTQtSU9TeHFEamMxRDdTS3RpZGlEUUlMbnVTVEdmaTIzRXVZWTZlMXJuZWRMRGpjRUlCazF4b0NzVFFRQXZEX0J3RQ..*_gcl_au*NjU2ODYxNTc1LjE3NTA2NjE3Mjk.*_ga*NTMzMTEzODA0LjE3MzY1MTEzNzA.*_ga_BDLF0PFGKQ*czE3NTYyMDEyNjQkbzk3JGcwJHQxNzU2MjAxMjY0JGo2MCRsMCRoNTk2NTg2MDk2&gclid=CjwKCAjwtrXFBhBiEiwAEKen14-IOSxqDjc1D7SKtidiDQILnuSTGfi23EuYY6e1rnedLDjcEIBk1xoCsTQQAvD_BwE&gbraid=0AAAAA-v023hWdwXvGbM5VJE7QCJpyuNE9" target="_blank">
+                            <button class="btn-save">{{ translate({ ident: "FCKUSTOM_REGISTER_NOW_BUTTON" }) }}</button>
+                        </a>
+                    </div>
+                    <div class="w50per">
+                        <a href="https://www.kustom.co/about" target="_blank">
+                            <button class="btn-save no-bg">{{ translate({ ident: "FCKUSTOM_LEARN_MORE_BUTTON" }) }}</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="kustom-header brands">
+        <div class="row">
+            <div class="w3 p-lr-15">
+                <h4>{{ translate({ ident: "FCKUSTOM_KUSTOM." }) }}</h4>
+                <p>{{ translate({ ident: "FCKUSTOM_KUSTOM_START" }) }}</p>
+            </div>
+            <div class="w3 p-lr-15">
+                <h4>{{ translate({ ident: "FCKUSTOM_TRUSTED." }) }}</h4>
+                <p>{{ translate({ ident: "FCKUSTOM_TRUSTED_START" }) }}</p>
+            </div>
+            <div class="w3 p-lr-15">
+                <h4>{{ translate({ ident: "FCKUSTOM_WAY." }) }}</h4>
+                <p>{{ translate({ ident: "FCKUSTOM_WAY_START" }) }}</p>
+            </div>
+            <div class="w3 p-lr-15">
+                <h4>{{ translate({ ident: "FCKUSTOM_QUICK" }) }}</h4>
+                <p>{{ translate({ ident: "FCKUSTOM_QUICK_START" }) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="kustom-header info">
+        <div class="w6 img-outer">
+            <img class="device-img" src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/img/') }}{{ translate({ ident: "FCKUSTOM_DEVICE_IMG" }) }}">
+        </div>
+        <div class="w6 ml-half">
+            <div>
+                <h4>{{ translate({ ident: "FCKUSTOM_RB_HOW_TO_ACTIVATE" }) }}</h4>
+                <ul>
+                    <li>{{ translate({ ident: "FCKUSTOM_RB_HOW_TO_ACTIVATE_LIST_ONE" }) }}</li>
+                    <li>{{ translate({ ident: "FCKUSTOM_RB_HOW_TO_ACTIVATE_LIST_TWO" }) }}</li>
+                    <li>{{ translate({ ident: "FCKUSTOM_RB_HOW_TO_ACTIVATE_LIST_THREE" }) }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="info-outer ml-half">
+        <div class="start_user_guide">
+            <div class="user-guide-text">
+                <p>{{ "FCKUSTOM_USER_GUIDE_DESCRIPTION"|translate }}</p>
+            </div>
+            <div class="user-guide-download">
+                <a href="{{ "FCKUSTOM_USER_GUIDE_LINK"|translate }}" target="_blank">
+                    <button class="btn-save">{{ "FCKUSTOM_USER_GUIDE_BUTTON"|translate }}</button>
+                </a>
+            </div>
+            <div class="w50per">
+                <a href="mailto:support@kustom.co" target="_blank">
+                    <button class="btn-save no-bg">{{ translate({ ident: "FCKUSTOM_MERCHANT_SUPPORT" }) }}</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+{% extends "form/fieldset/user_shipping.html.twig" %}
+
+{% block form_user_shipping_country %}
+    {% if oViewConf.isCheckoutNonKustomCountry() and oView.getIsOrderStep() %}
+        <div class="form-group{% if aErrors.oxaddress__oxcountryid %} oxInValid{% endif %}">
+            <label class="control-label col-lg-3{% if oView.isFieldRequired("oxaddress__oxcountryid") %} req{% endif %}"
+                   for="delCountrySelect">{{ translate({ ident: "COUNTRY" }) }}</label>
+            <div class="col-lg-9">
+                <select class="form-control{% if oView.isFieldRequired("oxaddress__oxcountryid") %} js-oxValidate js-oxValidate_notEmpty{% endif %} selectpicker"
+                        id="delCountrySelect"
+                        name="deladr[oxaddress__oxcountryid]"{% if oView.isFieldRequired("oxaddress__oxcountryid") %} required=""{% endif %}>
+                    <option value="">-</option>
+                    {% set blCountrySelected = false %}
+                    {% for country_id, country in oViewConf.getCountryList(true) %}
+                        {% set sCountrySelect = "" %}
+                        {% if not blCountrySelected %}
+                            {% if (isset(deladr.oxaddress__oxcountryid) and deladr.oxaddress__oxcountryid == country.oxcountry__oxid.value) or                        (not isset(deladr.oxaddress__oxcountryid) and (delivadr.oxaddress__oxcountry.value == country.oxcountry__oxtitle.value or                        delivadr.oxaddress__oxcountry.value == country.oxcountry__oxid.value or                        delivadr.oxaddress__oxcountryid.value == country.oxcountry__oxid.value)) %}
+                                {% set blCountrySelected = true %}
+                                {% set sCountrySelect = "selected" %}
+                            {% endif %}
+                        {% endif %}
+                        <option value="{{ country.oxcountry__oxid.value }}" {{ sCountrySelect }}>{{ country.oxcountry__oxtitle.value }}</option>
+                    {% endfor %}
+                </select>
+                {% if oView.isFieldRequired("oxaddress__oxcountryid") %}
+                    {% include "message/inputvalidation.html.twig" with {aErrors: aErrors.oxaddress__oxcountryid} %}
+                    <div class="help-block"></div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-3"
+                   for="{{ countrySelectId }}">{{ translate({ ident: "DD_USER_SHIPPING_LABEL_STATE" }) }}</label>
+            <div class="col-lg-9">
+                {% include "form/fieldset/state.html.twig" with {countrySelectId: "delCountrySelect", stateSelectName: "deladr[oxaddress__oxstateid]", selectedStateIdPrim: deladr.oxaddress__oxstateid, selectedStateId: delivadr.oxaddress__oxstateid.value, class: "form-control selectpicker"} %}
+            </div>
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

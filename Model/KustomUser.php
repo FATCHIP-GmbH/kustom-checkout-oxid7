@@ -1,0 +1,547 @@
+<?php
+
+
+namespace Fatchip\FcKustom\Model;
+
+
+use OxidEsales\Eshop\Core\Exception\SystemComponentException;
+use Fatchip\FcKustom\Core\KustomConsts;
+use Fatchip\FcKustom\Core\KustomFormatter;
+use Fatchip\FcKustom\Core\KustomUtils;
+use OxidEsales\Eshop\Application\Model\Address;
+use OxidEsales\Eshop\Application\Model\Country;
+use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\Field;
+use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Request;
+
+/**
+ * Class Kustom_oxUser extends default OXID oxUser class to add
+ * Kustom payment related additional parameters and logic
+ */
+class KustomUser extends KustomUser_parent
+{
+    const NOT_EXISTING   = 0;    // email not exists in user table
+    const REGISTERED     = 1;    // registered but not logged in
+    const NOT_REGISTERED = 2;    // not registered returning customer
+    const LOGGED_IN      = 3;    // logged in user
+
+    /**
+     *
+     * @var int  user type
+     */
+    protected $_type;
+
+    /**
+     * @var string user country ISO
+     */
+    protected $_countryISO;
+
+    /**
+     * @return array
+     * @throws SystemComponentException
+     */
+    public function getKustomData()
+    {
+        $result          = array();
+
+        if (KustomUtils::getShopConfVar('blKustomEnablePreFilling')) {
+            $this->preFillAddress($result);
+        }
+
+        if ($sCountryISO = Registry::get(Request::class)->getRequestEscapedParameter('selected-country')) {
+            if (Registry::getSession()->hasVariable('invadr')) {
+                Registry::getSession()->deleteVariable('invadr');
+            }
+            $result['billing_address']['country'] = $sCountryISO;
+            Registry::getSession()->setVariable('sCountryISO', $sCountryISO);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     * @throws SystemComponentException
+     */
+    protected function preFillAddress(&$result)
+    {
+        $blShowShippingAddress = (bool)Registry::getSession()->getVariable('blshowshipaddress');
+
+        $billingAddress            = KustomFormatter::oxidToKustomAddress($this);
+        $result['billing_address'] = isset($billingAddress) ? $billingAddress : null;
+
+        if (Registry::getSession()->hasVariable('deladrid') && $blShowShippingAddress) {
+            $delAddressOxid = Registry::getSession()->getVariable('deladrid');
+            $oAddress       = oxNew(Address::class);
+            $oAddress->load($delAddressOxid);
+            $shippingAddress            = KustomFormatter::oxidToKustomAddress($oAddress);
+            $result['shipping_address'] = isset($shippingAddress) ? $shippingAddress : null;
+        }
+    }
+
+    /**
+     * Get user country ISO2
+     *
+     * @return string|null
+     */
+    public function getUserCountryISO2()
+    {
+        // always reset cache for tests
+        if (defined('OXID_PHP_UNIT')) {
+            $this->_sUserCountryISO2 = null;
+        }
+
+        if ($this->_sUserCountryISO2 === null) {
+            $oCountry = oxNew(Country::class);
+            $oCountry->load($this->getFieldData('oxcountryid'));
+            if ($oCountry->exists()) {
+                $this->_sUserCountryISO2 = $oCountry->getFieldData('oxisoalpha2');
+            }
+        }
+
+        return $this->_sUserCountryISO2;
+    }
+
+    /**
+     * Set user countryId
+     * @return string country ISO alfa2
+     */
+    public function resolveCountry()
+    {
+        $oCountry    = $this->getKustomDeliveryCountry();
+        $sCountryISO = $oCountry->getFieldData('oxisoalpha2');
+        Registry::getSession()->setVariable('sCountryISO', $sCountryISO);
+
+        return strtoupper($sCountryISO);
+    }
+
+    /**
+     * @return Country
+     */
+    public function getKustomDeliveryCountry()
+    {
+        $oCountry = oxNew(Country::class);
+        if (!($sCountryISO = Registry::getSession()->getVariable('sCountryISO'))) {
+
+            if (!($sCountryId = $this->getFieldData('oxcountryid'))) {
+                $sCountryISO = KustomUtils::getShopConfVar('sKustomDefaultCountry');
+                $sCountryId  = $oCountry->getIdByCode($sCountryISO);
+            }
+
+        } else {
+            $sCountryId = $oCountry->getIdByCode($sCountryISO);
+        }
+        $this->oxuser__oxcountryid = new Field($sCountryId, Field::T_RAW);
+
+        $oCountry->load($sCountryId);
+
+        return $oCountry;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryISO()
+    {
+        if ($this->_countryISO)
+            return $this->_countryISO;
+        else
+            return $this->_countryISO = $this->resolveCountry();
+    }
+
+    /**
+     * @param $sCountryISO
+     * @return string user locale
+     */
+    public function resolveLocale($sCountryISO)
+    {
+        return KustomUtils::resolveLocale($sCountryISO);
+    }
+
+    /**
+     * Check if user exists by its email, allow users with passwords as well, skip admin
+     * @param string $sEmail
+     * @return KustomUser -1 cant use this email, 0 no user found, 1 user loaded
+     * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
+     */
+    public function loadByEmail($sEmail)
+    {
+        if ($this->_type == self::LOGGED_IN)
+            return $this;
+
+        $exists = false;
+        if ($sEmail) {
+            $oDb = DatabaseProvider::getDb();
+            $sQ  = "SELECT `oxid` FROM `oxuser` WHERE `oxusername` = " . $oDb->quote($sEmail);
+            if (!Registry::getConfig()->getConfigParam('blMallUsers')) {
+                $sQ .= " AND `oxshopid` = " . $oDb->quote(Registry::getConfig()->getShopId());
+            }
+            $sId    = $oDb->getOne($sQ);
+            if ($sId) {
+                $exists = $this->load($sId);
+            }
+        }
+
+        if ($exists) {
+            if (empty($this->oxuser__oxpassword->value)) {
+                $this->_type = self::NOT_REGISTERED;
+            } else {
+                $this->_type = self::REGISTERED;
+            }
+        } else {
+            $this->_type = self::NOT_EXISTING;
+            $this->setFakeUserId();
+        }
+
+        if(empty($this->oxuser__oxrights->value)){
+            $this->oxuser__oxrights = new Field('user');
+        }
+
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function setFakeUserId()
+    {
+        if (Registry::getSession()->hasVariable('sFakeUserId')) {
+            $this->setId(Registry::getSession()->getVariable('sFakeUserId'));
+        } else {
+            $this->setId();
+            Registry::getSession()->setVariable('sFakeUserId', $this->getId());
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
+
+    /**
+     * @param int $iType
+     */
+    public function setType($iType)
+    {
+        $this->_type = $iType;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFake()
+    {
+        return ($this->getType() && $this->getType() !== self::LOGGED_IN) || !$this->oxuser__oxpassword->value;
+    }
+
+    /**
+     * Checks if we can save user data to the database
+     * @return bool
+     */
+    public function isWritable()
+    {
+        return $this->_type !== self::REGISTERED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCreatable()
+    {
+        return $this->_type == self::NOT_EXISTING || $this->_type == self::NOT_REGISTERED;
+    }
+
+    /**
+     * Saves delivery address in the database
+     *
+     * @param $aDelAddress array Kustom delivery_address
+     * @return void
+     */
+    public function updateDeliveryAddress($aDelAddress)
+    {
+        $oAddress = $this->buildAddress($aDelAddress);
+
+        if ($oAddress->isValid()) {
+            // save only unique address for
+            if (!$sAddressOxid = $oAddress->klExists()) {
+                $sAddressOxid = $oAddress->save();
+            }
+            $this->updateSessionDeliveryAddressId($sAddressOxid);
+        }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @param $aDelAddress
+     * @return object
+     */
+    protected function buildAddress($aDelAddress)
+    {
+        $oAddress = oxNew(Address::class);
+        $oAddress->setId();
+        $oAddress->assign($aDelAddress);
+
+        $oAddress->oxaddress__oxuserid  = new Field($this->getId(), Field::T_RAW);
+        $oAddress->oxaddress__oxcountry = $this->getUserCountry($oAddress->oxaddress__oxcountryid->value);
+        if ($this->isFake()) {
+            $oAddress->oxaddress__fckustom_temporary = new Field(1, Field::T_RAW);
+        }
+
+        return $oAddress;
+    }
+
+    /**
+     * For Fake user. Replace session oxAddress ID, remove old address from DB
+     * @param $sAddressOxid
+     */
+    public function updateSessionDeliveryAddressId($sAddressOxid = null)
+    {
+        $oSession = Registry::getSession();
+        // keep only one address record for fake user, remove old
+        if ($this->isFake() && $oSession->hasVariable('deladrid')) {
+            $this->clearDeliveryAddress(); // remove old address from db
+        }
+        if ($sAddressOxid) {
+            $oSession->setVariable('deladrid', $sAddressOxid);
+            Registry::getSession()->setVariable('blshowshipaddress', 1);
+        }
+    }
+
+    /**
+     * Remove delivery address from session and database
+     *
+     * @return void
+     */
+    public function clearDeliveryAddress()
+    {
+        $oAddress = oxNew(Address::class);
+        $oAddress->load(Registry::getSession()->getVariable('deladrid'));
+        Registry::getSession()->setVariable('deladrid', null);
+        Registry::getSession()->setVariable('blshowshipaddress', 0);
+    }
+
+    /**
+     * @return string currency ISO for user country
+     */
+    public function getKustomPaymentCurrency()
+    {
+        $country2currency = oxNew(KustomConsts::class)->getCountry2CurrencyArray();
+        $cur              = $this->resolveCountry();
+        if (isset($country2currency[$cur])) {
+
+            return $country2currency[$cur];
+        }
+    }
+
+    /**
+     * @return null|Address
+     */
+    public static function getDelAddressInfo()
+    {
+        $oDelAdress            = null;
+        $blShowShippingAddress = (bool)Registry::getSession()->getVariable('blshowshipaddress');
+        if (!($soxAddressId = Registry::get(Request::class)->getRequestEscapedParameter('deladrid'))) {
+            $soxAddressId = Registry::getSession()->getVariable('deladrid');
+        }
+        if ($soxAddressId && $blShowShippingAddress) {
+            $oDelAdress = oxNew(Address::class);
+            $oDelAdress->load($soxAddressId);
+
+            //get delivery country name from delivery country id
+            if ($oDelAdress->oxaddress__oxcountryid->value && $oDelAdress->oxaddress__oxcountryid->value != -1) {
+                $oCountry = oxNew(Country::class);
+                $oCountry->load($oDelAdress->oxaddress__oxcountryid->value);
+                $oDelAdress->oxaddress__oxcountry = clone $oCountry->oxcountry__oxtitle;
+            }
+        }
+
+        return $oDelAdress;
+    }
+
+    /**
+     *
+     */
+    public function changeUserData($sUser, $sPassword, $sPassword2, $aInvAddress, $aDelAddress)
+    {
+        parent::changeUserData($sUser, $sPassword, $sPassword2, $aInvAddress, $aDelAddress);
+
+        Registry::getSession()->setVariable('sCountryISO', $this->getUserCountryISO2());
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttachmentsData()
+    {
+        if (!$this->isFake()) {
+            $emd = $this->getEMD();
+            if (!empty($emd)) {
+                return array(
+                    'content_type' => 'application/vnd.klarna.internal.emd-v2+json',
+                    'body'         => json_encode($emd),
+                );
+            }
+        }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function getEMD()
+    {
+        $kustomEmd = new KustomEMD();
+
+        return $kustomEmd->getAttachments($this);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function save()
+    {
+        $result = parent::save();
+        if ($result) {
+            Registry::getSession()->setVariable('sCountryISO', $this->getUserCountryISO2());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function logout()
+    {
+        $result = parent::logout();
+        if ($result && !$this->isAdmin()) {
+            KustomUtils::fullyResetKustomSession();
+            Registry::getSession()->deleteVariable("kustomLoggedInNaturally");
+            Registry::getSession()->deleteVariable("blNeedLogout");
+        }
+
+        return $result;
+    }
+
+    /**
+     *
+     * @param $sUser
+     * @param $sPassword
+     * @param bool $blCookie
+     */
+    public function login($sUser, $sPassword, $blCookie = false)
+    {
+        $result = parent::login($sUser, $sPassword, $blCookie);
+
+        Registry::getSession()->setVariable(
+            'sCountryISO',
+            $this->getUserCountryISO2()
+        );
+        Registry::getSession()->deleteVariable('kustom_checkout_user_email');
+        $this->_type = self::LOGGED_IN;
+
+        Registry::getSession()->setVariable("kustomLoggedInNaturally", true);
+
+        return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function checkUserType()
+    {
+        if ($this->getId() === Registry::getSession()->getVariable('usr')) {
+
+            return $this->_type = self::LOGGED_IN;
+        }
+
+        return $this->_type = self::NOT_REGISTERED;
+    }
+
+    public function setActiveUser()
+    {
+        if ($this->isFake()) {
+            self::$_oActUser = $this;
+        }
+    }
+
+    public function tcklrnaHasValidInfo()
+    {
+        $checkFields = array(
+            'oxusername',
+            'oxfname',
+            'oxlname',
+            'oxstreet',
+            'oxstreetnr',
+            'oxcity',
+            'oxcountryid',
+            'oxzip'
+        );
+
+        foreach($checkFields as $fieldName) {
+            $value = $this->getFieldData($fieldName);
+            if (empty($value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function exists($sOXID = null)
+    {
+        // skip reloading user by username because it overwrites external payment users
+        if ($this->isFake()) {
+            if (!$sOXID) {
+                $sOXID = $this->getId();
+            }
+            if (!$sOXID) {
+                return false;
+            }
+
+            $viewName = $this->getCoreTableName();
+            $database = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC);
+            $query = "select {$this->_sExistKey} from {$viewName} where {$this->_sExistKey} = :oxid";
+
+            return (bool) $database->getOne($query, [
+                ':oxid' => $sOXID
+            ]);
+        }
+
+        return parent::exists($sOXID);
+    }
+
+    /**
+     * Kustom modification: outsources the part form User::exists() which is meant only for the newsletter
+     *
+     * @return bool
+     */
+    public function userExistsByMail()
+    {
+        $params = [];
+
+        $sShopSelect = '';
+        if (!$this->_blMallUsers && $this->oxuser__oxrights->value != 'malladmin') {
+            $sShopSelect = ' AND oxshopid = :oxshopid ';
+            $params[':oxshopid'] = Registry::getConfig()->getShopId();
+        }
+
+        // We force reading from master to prevent issues with slow replications or open transactions (see ESDEV-3804).
+        $masterDb = \OxidEsales\Eshop\Core\DatabaseProvider::getMaster();
+        $sSelect = 'SELECT oxid FROM ' . $this->getViewName() . '
+                    WHERE oxusername = :oxusername ';
+        $sSelect .= $sShopSelect;
+        $params[':oxusername'] = (string) $this->oxuser__oxusername->value;
+
+        if (($sOxid = $masterDb->getOne($sSelect, $params))) {
+            // update - set oxid
+            $this->setId($sOxid);
+
+            return true;
+        }
+
+        return false;
+    }
+}

@@ -1,0 +1,118 @@
+<div class="kustom-modal modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn btn-default close pull" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title"
+                    id="myModalLabel">{{ translate({ ident: "FCKUSTOM_CHOOSE_YOUR_SHIPPING_COUNTRY" }) }}</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form" id="select-country-form" name="select-country"
+                      action="{{ oViewConf.getSslSelfLink() }}"
+                      method="post">
+                    <div class="hidden">
+                        {{ oViewConf.getHiddenSid()|raw }}
+                        <input type="hidden" name="cl" value="KustomExpress">
+                        <input type="hidden" name="selected-country" value="">
+                    </div>
+                    {% for country in oView.getKustomModalFlagCountries() %}
+                        <button type="button"
+                                class="btn btn-default" value="{{ country.oxcountry__oxisoalpha2.value }}">
+                            <div class="kustom-flag {{ country.oxcountry__oxisoalpha2.value|lower }}"></div>
+                            <span class="country-name">{{ country.oxcountry__oxtitle.value }}</span>
+                        </button>
+                    {% endfor %}
+                </form>
+                <div class="other-countries-select">
+                    <div class="form-group">
+                        <select class="form-control js-country-select" id="other-countries">
+                            <option disabled selected>{{ translate({ ident: "FCKUSTOM_MORE_COUNTRIES" }) }}</option>
+                            {% set shopCountriesCount = 0 %}
+                            {% for country in oView.getActiveShopCountries() %}
+                                {% set defaultCounter = ( defaultCounter | default(0) ) + 1 %} {% set shopCountriesCount = defaultCounter %}
+                                <option value="{{ country.oxcountry__oxisoalpha2.value }}">{{ country.oxcountry__oxtitle.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var showModal;
+    {% if blShowPopUp and sKustomIframe and shopCountriesCount > 1 %}
+        showModal = true;
+    {% endif %}
+
+    if (window.addEventListener) {
+        window.addEventListener('load', countryPopupHandler);
+    } else {
+        window.attachEvent('onload', countryPopupHandler);
+    }
+
+    function countryPopupHandler() {
+        var loadedPurchaseCountry = "{{ sPurchaseCountry|upper }}";
+        var modal = document.getElementById('myModal');
+
+        // --- handle resetCountry link ---
+        var resetCountry = document.getElementById('resetCountry');
+        if (resetCountry) {
+            resetCountry.addEventListener('click', function (e) {
+                var link = e.target.closest('a');
+                if (!link) return;
+                e.preventDefault();
+
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                    modalInstance.show();
+                } else {
+                    modal.style.display = 'block';
+                }
+            });
+        }
+
+        // --- handle form and input ---
+        var form = document.querySelector('#select-country-form');
+        if (form) form = form.closest('form');
+        if (!form) return;
+
+        var input = form.querySelector('input[name="selected-country"]');
+        if (!input) return;
+
+        // --- handle button clicks ---
+        form.querySelectorAll('button').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                if (this.value === loadedPurchaseCountry) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                        modalInstance.hide();
+                    } else {
+                        modal.style.display = 'none';
+                    }
+                    return;
+                }
+                e.preventDefault();
+                input.value = this.value;
+                form.submit();
+            });
+        });
+
+        // --- handle <select> change ---
+        document.querySelectorAll('.js-country-select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                if (this.value === loadedPurchaseCountry) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                        modalInstance.hide();
+                    } else {
+                        modal.style.display = 'none';
+                    }
+                    return;
+                }
+                input.value = this.value;
+                form.submit();
+            });
+        });
+    }
+</script>

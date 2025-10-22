@@ -1,0 +1,20 @@
+{% extends "widget/minibasket/minibasket.html.twig" %}
+
+{% block widget_minibasket %}
+    {% if not oViewConf.isActiveControllerKustomExpress() %}
+        {{ parent() }}
+        {% if _prefix == 'modal' %}
+            <script type="text/javascript">
+                var button = '<a class="btn btn-primary submitButton largeButton" ' +
+                    'href="{{ seo_url({ ident: oViewConf.getSslSelfLink()|cat("cl=KustomExpress") }) }}">' +
+                    '{{ translate({ ident: "FCKUSTOM_GO_TO_CHECKOUT" }) }}</a>';
+            </script>
+            {{ script({ add: '$(".modal-footer").append(button);', dynamic: __oxid_include_dynamic }) }}
+        {% else %}
+            <script type="text/javascript">
+                var url = "{{ oViewConf.getSslSelfLink()|cat("cl=KustomExpress") }}";
+            </script>
+            {{ script({ add: '$("p.functions .btn-primary").attr("href", url);', dynamic: __oxid_include_dynamic }) }}
+        {% endif %}
+    {% endif %}
+{% endblock %}

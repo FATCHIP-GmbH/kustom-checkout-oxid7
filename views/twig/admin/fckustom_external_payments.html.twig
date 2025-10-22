@@ -1,0 +1,290 @@
+<link rel="stylesheet" href="{{ oViewConf.getResourceUrl() }}main.css">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/fckustom_admin2.css') }}">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster.bundle.min.css') }}">
+<link rel="stylesheet"
+      href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster-sideTip-light.min.css') }}">
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jquery-1.12.4.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/tooltipster.bundle.min.js') }}"></script>
+
+<div class="{{ box|default('box') }}" style="{% if not box and not bottom_buttons %}height: 100%;{% endif %}">
+    <div class="main-container">
+        {% include "@fckustom/admin/fckustom_header.html.twig" with {title: "FCKUSTOM_EXTERNAL_PAYMENTS"|translate, desc: "FCKUSTOM_EXTERNAL_PAYMENTS_ADMIN_DESC"|translate} %}
+        <hr>
+        <div class="kustom-expandable-list">
+            <form name="myedit" id="myedit" method="post" action="{{ oViewConf.getSelfLink()|raw }}"
+                  enctype="multipart/form-data">
+                <input type="hidden" name="MAX_FILE_SIZE" value="{{ iMaxUploadFileSize|raw }}">
+                {{ oViewConf.getHiddenSid()|raw }}
+                <input type="hidden" name="cl" value="KustomExternalPayments">
+                <input type="hidden" name="fnc" value="save">
+                {% for payment in activePayments %}
+                    {% set paymentOn = payment.fckustom_externalpayment %}
+                    {% set checkoutOn = payment.fckustom_externalcheckout %}
+                    <div class="kustom-row">
+                        <div class="row-label">
+                            <div class="sign plus"></div>
+                            <div class="text">
+                                {{ payment.desc|raw }}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="rows-wrapper">
+                            <table class="config-options kustom-conf-table">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="inner-table">
+                                            <tr class="bg-light">
+                                                <td class="name-bold">
+                                                    {{ translate({ ident: "FCKUSTOM_PAYMENT_METHOD" }) }}
+                                                </td>
+                                                <td>
+                                                    <div class="input">
+                                                        <div class="selector payment-selector">
+                                                            <div class="selector__menu">
+                                                                <ul class="selector__choices">
+                                                                    {% for name in paymentNames %}
+                                                                        <li class="selector__item{% if payment.fckustom_externalname == name %}--selected{% endif %}">
+                                                                            <a href="#" data-value="{{ name|raw }}">
+                                                                                {{ name|raw }}
+                                                                            </a>
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                                <input type="hidden"
+                                                                       name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_externalname]"
+                                                                       value="{{ payment.fckustom_externalname|raw }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                        <span class="kl-tooltip"
+                                                              title="{{ translate({ ident: "FCKUSTOM_EXTERNAL_PAYMENT_NAME_SELECT_TOOLTIP" }) }}">
+                                                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                                        </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <table class="inner-table">
+                                            <tr class="bg-light">
+                                                <td class="name-bold">
+                                                    {{ translate({ ident: "FCKUSTOM_EXTERNAL_PAYMENT_METHOD" }) }}
+                                                </td>
+                                                <td>
+                                                    <div class="input">
+                                                        <div class="display">
+                                                            <label class="label toggle" for="{{ payment.oxid|raw }}">
+                                                                <input type="hidden"
+                                                                       name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_externalpayment]"
+                                                                       value="0">
+                                                                <input type="checkbox"
+                                                                       class="toggle_input js-external-payment"
+                                                                       name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_externalpayment]"
+                                                                       data-payment-id="{{ payment.oxid|raw }}"
+                                                                       value="1" id="{{ payment.oxid|raw }}"
+                                                                       {% if paymentOn %}checked{% endif %} {{ readonly }}>
+                                                                <div class="toggle-control js-enable-payment"
+                                                                     data-payment-id="{{ payment.oxid|raw }}"
+                                                                     data-column="payment">
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                        <span class="kl-tooltip"
+                                                              title="{{ translate({ ident: "FCKUSTOM_ENABLE_EXTERNAL_PAYMENT_TOOLTIP" }) }}">
+                                                            <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                                        </span>
+                                                </td>
+                                            </tr>
+                                            {% if payment.isCheckout %}
+                                                <tr class="bg-light">
+                                                    <td class="name-bold">
+                                                        {{ translate({ ident: "FCKUSTOM_EXTERNAL_CHECKOUT" }) }}
+                                                    </td>
+                                                    <td>
+                                                        <div class="input">
+                                                            <div class="display">
+                                                                <label class="label toggle" for="{{ payment.oxid|raw }}1">
+                                                                    <input type="hidden"
+                                                                           name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_externalcheckout]"
+                                                                           value="0">
+                                                                    <input type="checkbox"
+                                                                           class="toggle_input js-external-payment"
+                                                                           name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_externalcheckout]"
+                                                                           data-payment-id="{{ payment.oxid|raw }}"
+                                                                           value="1" id="{{ payment.oxid|raw }}1"
+                                                                           {% if checkoutOn %}checked{% endif %} {{ readonly }}>
+                                                                    <div class="toggle-control js-enable-payment"
+                                                                         data-payment-id="{{ payment.oxid|raw }}"
+                                                                         data-column="checkout">
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                            <span class="kl-tooltip"
+                                                                  title="{{ translate({ ident: "FCKUSTOM_ENABLE_EXTERNAL_CHECKOUT_TOOLTIP" }) }}">
+                                                                <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                                            </span>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr id="urls-{{ payment.oxid|raw }}">
+                                    <td>
+                                        <div class="rows-wrapper"
+                                             {% if (payment.isExternalEnabled == '1') %}style="display: block;"{% endif %}>
+                                            <table class="inner-table">
+                                                <tr class="bg-light">
+                                                    <td class="name-bold">
+                                                        {{ translate({ ident: "GENERAL_LANGUAGE" }) }}
+                                                    </td>
+                                                    <td>
+                                                        <div class="selector langSelector"
+                                                             data-payment-id="{{ payment.oxid|raw }}">
+                                                            <div class="selector__menu">
+                                                                <ul class="selector__choices">
+                                                                    {% for lang, olang in languages %}
+                                                                        <li class="selector__item{% if lang == adminlang %}--selected{% endif %}"
+                                                                            data-value="{{ lang }}">
+                                                                            <a href="#">{{ olang.name }}</a>
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                    </td>
+                                                </tr>
+                                                <tr class="bg-light">
+                                                    <td colspan="3">
+                                                        <div class="rows-wrapper"
+                                                                {% set patternPrefix = "data-" %}
+                                                                {% if paymentOn %}
+                                                            style="display: block"
+                                                                {% set patternPrefix = "" %}
+                                                                {% endif %}>
+                                                            <table class="inner-table">
+                                                                <tr class="bg-dark js-payment-img"
+                                                                        {% if adminlang != 0 %}
+                                                                            {% set suffix = "_"|cat(adminlang) %}
+
+                                                                        {% else %}
+                                                                            {% set suffix = "" %}
+                                                                        {% endif %}
+                                                                >
+                                                                    <td>
+                                                                        <div class="name-bold">{{ translate({ ident: "FCKUSTOM_IMAGE_URI_EXT_PAYMENT" }) }}</div>
+                                                                        <div class="dimensions-tip">{{ translate({ ident: "FCKUSTOM_IMAGE_TIP_69x24" }) }}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="input relative">
+                                                                            <input type="text"
+                                                                                   class="js-multilang-input"
+                                                                                   {{ patternPrefix }}pattern="^(https://)?([a-zA-Z0-9]([a-zA-ZäöüÄÖÜ0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}.*"
+                                                                                   data-payment-id="{{ payment.oxid|raw }}"
+                                                                                   data-field-name="oxpayments__fckustom_paymentimageurl"
+                                                                                   name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_paymentimageurl{{ suffix }}]"
+                                                                                    {# {% if paymentOn %} required {% endif %} #}
+                                                                                   value="{{ payment.fckustom_paymentimageurl }}">
+                                                                            {% if payment.fckustom_paymentimageurl %}
+                                                                                <div class="preview_69_24">
+                                                                                    <img src="{{ payment.fckustom_paymentimageurl }}"
+                                                                                         width="69" height="24">
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                            <span class="kl-tooltip"
+                                                                                  title="{{ translate({ ident: "FCKUSTOM_EXTERNAL_PAYMENT_IMAGE_URL_TOOLTIP" }) }}">
+                                                                                <i class="fa fa-question fa-lg"
+                                                                                   aria-hidden="true"></i>
+                                                                            </span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                        {% if payment.isCheckout %}
+                                                            <div class="rows-wrapper"
+                                                                    {% set patternPrefix = "data-" %}
+                                                                    {% if checkoutOn %}
+                                                                style="display: block"
+                                                                    {% set patternPrefix = "" %}
+                                                                    {% endif %}>
+                                                                <table class="inner-table">
+                                                                    <tr class="bg-dark js-checkout-img">
+                                                                        <td>
+                                                                            <div class="name-bold">{{ translate({ ident: "FCKUSTOM_IMAGE_URI_EXT_CHECKOUT" }) }}</div>
+                                                                            <div class="dimensions-tip">{{ translate({ ident: "FCKUSTOM_IMAGE_TIP_276x48" }) }}</div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="input relative">
+                                                                                <input type="text"
+                                                                                       class="js-multilang-input half-w"
+                                                                                       {{ patternPrefix }}pattern="^(https://)?([a-zA-Z0-9]([a-zA-ZäöüÄÖÜ0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}.*"
+                                                                                       data-payment-id="{{ payment.oxid|raw }}"
+                                                                                       data-field-name="oxpayments__fckustom_checkoutimageurl"
+                                                                                       name="payments[{{ payment.oxid|raw }}][oxpayments__fckustom_checkoutimageurl{{ suffix }}]"
+                                                                                        {% if checkoutOn %} required {% endif %}
+                                                                                       value="{{ payment.fckustom_checkoutimageurl }}">
+
+                                                                                {% if payment.fckustom_checkoutimageurl %}
+                                                                                    <div class="preview_276_48">
+                                                                                        <img src="{{ payment.fckustom_checkoutimageurl }}"
+                                                                                             width="276" height="48">
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                        <span class="kl-tooltip"
+                                                                              title="{{ translate({ ident: "FCKUSTOM_EXTERNAL_CHECKOUT_IMAGE_URL_TOOLTIP" }) }}">
+                                                                            <i class="fa fa-question fa-lg"
+                                                                               aria-hidden="true"></i>
+                                                                        </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                {% endfor %}
+                <div class="messagebox info">
+                    <p>{{ "FCKUSTOM_CHANGES_SAVED"|translate }}</p>
+                </div>
+                <div class="btn-center">
+                    <input type="submit" name="save" class="btn-save" value="{{ translate({ ident: "GENERAL_SAVE" }) }}"
+                           id="form-save-button" {{ readonly }}>
+                </div>
+            </form>
+            <script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_admin_lib.js') }}"></script>
+            <script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_external_payments.js') }}"></script>
+        </div>
+    </div>
+</div>
+

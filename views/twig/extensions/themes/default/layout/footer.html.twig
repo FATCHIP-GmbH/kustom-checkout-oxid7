@@ -1,0 +1,165 @@
+{% extends "layout/footer.html.twig" %}
+
+{% block footer_main %}
+
+    {{ parent() }}
+
+    {% set aKlFooter = oViewConf.getKustomFooterContent() %}
+    {% if aKlFooter.script %}
+        {{ aKlFooter.script }}
+    {% endif %}
+    {{ script({ include: oViewConf.getModuleUrl('fckustom', 'out/src/js/fckustom_scripts.js'), priority: 10, dynamic: __oxid_include_dynamic }) }}
+
+    {% if aKlFooter %}
+
+        {% capture assign = "klFooterContent" %}
+            {% if aKlFooter.url %}
+                    <style>
+                        .kstm-logo {
+                            margin-top: 30px;
+                        }
+
+                        .kstm-logo img {
+                            max-width: 100%;
+                        }
+                    </style>
+
+                    <div class="kstm-logo">
+                        <div class="kstm-logo-inner">
+                            <img width="243" src="{{ aKlFooter.url }}">
+                        </div>
+                    </div>
+            {% endif %}
+        {% endcapture %}
+
+        <script type="text/javascript">
+            function embedKustomLogo(content) {
+                if (content.length > 0) {
+                    var imgdiv = document.createElement('div');
+                    imgdiv.innerHTML = content;
+                    document.getElementById('footer-newsletter').append(imgdiv);
+                    // get logo in natural size
+                    var img = content.find('img');
+                    var parsedUrl = img.attr('src').split('width=');
+                    if (parsedUrl.length > 1) {
+                        var prevStyle = getComputedStyle(content.prev().children().first()[0]);
+                        img.attr('src', parsedUrl[0] + 'width=' + parseInt(prevStyle.width));
+                    }
+                }
+            }
+        </script>
+        {% set klFooterContent = klFooterContent|escape("js") %}
+        <script type="text/javascript">
+            embedKustomLogo('{{ klFooterContent }}');
+        </script>
+    {% endif %}
+
+    {% if oViewConf.showCheckoutTerms() %}
+        {% set kustomLawNotifUrl = oViewConf.getLawNotificationsLinkKco() %}
+        <style>
+            #legalModal iframe {
+                padding-top: 30px;
+                width: 100%;
+                border: 0;
+            }
+
+            .modal-dialog button.close {
+                position: absolute;
+                right: 0;
+                z-index: 1;
+                font-size: 30px;
+                font-weight: 700;
+                line-height: 1;
+                color: #000;
+                text-shadow: 0 1px 0 #fff;
+                filter: alpha(opacity=20);
+                opacity: .2;
+                background-color: #fff;
+                padding: 0;
+                margin: 14px;
+                border: none;
+            }
+
+            .modal-dialog button.close:hover {
+                opacity: .7;
+            }
+
+            label {
+                font-weight: normal;
+            }
+
+            .kustom-notification {
+                text-decoration: underline;
+                color: #009EC0;
+            }
+
+            .kustom-notification:hover {
+                text-decoration: none;
+                color: #008DB0;
+            }
+        </style>
+        <div class="kustom-modal modal fade" id="legalModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <button type="button" class="btn btn-default close pull" data-dismiss="modal">&times;</button>
+                    <div class="modal-body">
+                        <iframe style="max-width: 660px !important; height: 500px !important;"
+                                src="{{ kustomLawNotifUrl }}" scrolling="yes"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% capture assign = "lawNoticeTemplate" %}
+            <div class="kustom-law-notice">
+                {% set kustomLawNoticeMessage = "FCKUSTOM_LAW_NOTICE"|translate(oViewConf.getLawNotificationsLinkKco()) %}
+                {{ kustomLawNoticeMessage }}
+            </div>
+        {% endcapture %}
+        <script>
+            if (window.addEventListener) {
+                window.addEventListener('load', insertKustomNotifications);
+            } else {
+                window.attachEvent('onload', insertKustomNotifications);
+            }
+
+            function insertKustomNotifications() {
+                var temp = document.createElement('div');
+                temp.innerHTML = "{{ lawNoticeTemplate|json_encode|raw }}";
+                var noticeBox = temp.firstElementChild;
+
+                var loginForm = document.querySelector('form[name=login]');
+                if (loginForm) {
+                    var lastCheckboxDiv = loginForm.querySelector('div.checkbox:last-of-type');
+                    if (lastCheckboxDiv) {
+                        var clone = noticeBox.cloneNode(true);
+                        lastCheckboxDiv.appendChild(clone);
+                    }
+                }
+
+                var registerForm = document.querySelector('form[name=order]');
+                if (registerForm && registerForm.querySelector('input[name=cl][value=register]')) {
+                    var lastHelpBlock = registerForm.querySelector('span.help-block:last-of-type');
+                    if (lastHelpBlock) {
+                        var clone2 = noticeBox.cloneNode(true);
+                        lastHelpBlock.appendChild(clone2);
+                    }
+                }
+
+                document.querySelectorAll('a.kustom-notification').forEach(function (link) {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        var modal = document.getElementById('legalModal');
+                        if (!modal) return;
+
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            var modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                            modalInstance.show();
+                        } else {
+                            modal.style.display = 'block';
+                        }
+                    });
+                });
+            }
+        </script>
+    {% endif %}
+{% endblock %}

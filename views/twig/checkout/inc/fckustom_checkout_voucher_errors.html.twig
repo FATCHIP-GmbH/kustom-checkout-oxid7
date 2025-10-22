@@ -1,0 +1,18 @@
+{% for key, oEr in Errors.basket %}
+    {% if oEr.getErrorClassType() == 'oxVoucherException' %}
+        <div class="alert alert-danger">
+            {{ translate({ ident: "COUPON_NOT_ACCEPTED", args: oEr.getValue('voucherNr') }) }}
+            <strong>{{ translate({ ident: "REASON", suffix: "COLON" }) }}</strong>
+            {{ oEr.getOxMessage() }}
+        </div>
+    {% endif %}
+{% endfor %}
+{% for key, oEr in Errors.default %}
+    {% if oEr.getErrorClassType() == 'oxVoucherException' %}
+        <div class="alert alert-danger">
+            {{ translate({ ident: "COUPON_NOT_ACCEPTED", args: oEr.getValue('voucherNr') }) }}
+            <strong>{{ translate({ ident: "REASON", suffix: "COLON" }) }}</strong>
+            {{ oEr.getOxMessage() }}
+        </div>
+    {% endif %}
+{% endfor %}

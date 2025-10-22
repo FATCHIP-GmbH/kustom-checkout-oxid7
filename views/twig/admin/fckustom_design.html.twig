@@ -1,0 +1,311 @@
+{% set lang_tag = "" %}
+{% for language in languages %}
+    {% if (language.id is same as editlanguage) %}
+        {% set lang_tag = language.abbr|upper %}
+    {% endif %}
+{% endfor %}
+
+<link rel="stylesheet" href="{{ oViewConf.getResourceUrl()|raw }}main.css">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/fckustom_admin2.css') }}">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster.bundle.min.css') }}">
+<link rel="stylesheet"
+      href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster-sideTip-light.min.css') }}">
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jquery-1.12.4.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/tooltipster.bundle.min.js') }}"></script>
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jscolor/jscolor.js') }}"></script>
+
+<div class="{{ box|default('box') }}" style="{% if not box and not bottom_buttons %}height: 100%;{% endif %}">
+    <div class="main-container">
+        {% include "@fckustom/admin/fckustom_header.html.twig" with {title: "FCKUSTOM_KUSTOMDESIGN"|translate, desc: "FCKUSTOM_DESIGN_SETTINGS_ADMIN_DESC"|translate} %}
+        <div class="kustom-expandable-list">
+            <form name="myedit" id="myedit" method="post"
+                  action="{{ oViewConf.getSelfLink()|raw }}"
+                  enctype="multipart/form-data"
+                  data-langs="{{ oView.getLangs()|raw }}">
+
+                <input type="hidden" name="MAX_FILE_SIZE" value="{{ iMaxUploadFileSize }}">
+                {{ oViewConf.getHiddenSid()|raw }}
+                <input type="hidden" name="cl" value="KustomDesign">
+                <input type="hidden" name="fnc" value="save">
+                <!-- Footer -->
+                <div class="kustom-row">
+                    <div class="row-label">
+                        <div class="sign plus"></div>
+                        <div class="text ">
+                            {{ translate({ ident: "FCKUSTOM_FOOTER" }) }}
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="rows-wrapper">
+                        <table class="config-options">
+                            <tbody>
+                            <tr class="no-t-border">
+                                <td>
+                                    <table class="inner">
+                                        <tbody>
+                                        <tr class="dark">
+                                            <td class="name-bold" colspan="3">
+                                                {{ translate({ ident: "FCKUSTOM_DISPLAY_IN_FOOTER" }) }}
+                                            </td>
+                                        </tr>
+                                        <tr class="dark">
+                                            <td class="name">
+                                                {{ translate({ ident: "FCKUSTOM_FOOTER_KUSTOM_LOGO" }) }}
+                                            </td>
+                                            <td class="input w460">
+                                                <div class="input">
+                                                    <div class="display">
+                                                        <label class="label toggle" for="FooterDisplay1">
+                                                            <input type="hidden"
+                                                                   name="confstrs[sKustomFooterDisplay]" value="0">
+                                                            <input type="checkbox" class="toggle_input radio_type"
+                                                                   name="confstrs[sKustomFooterDisplay]"
+                                                                   value="2" id="FooterDisplay1"
+                                                                   {% if (confstrs.sKustomFooterDisplay is same as('2')) %}checked{% endif %} {{ readonly }}/>
+                                                            <div class="toggle-control"></div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="info-block">
+                                                <span class="kl-tooltip"
+                                                      title="{{ translate({ ident: "FCKUSTOM_FOOTER_KUSTOM_LOGO_TOOLTIP" }) }}">
+                                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr class="no-t-border no-b-border">
+                                <td>
+                                    <div class="rows-wrapper"
+                                         {% if confstrs.sKustomFooterDisplay is same as('2') %}style="display: block"{% endif %}>
+                                        <table class="inner">
+                                            <tbody>
+                                                <tr class="dark">
+                                                    <td class="name-bold" colspan="3">
+                                                        {{ translate({ ident: "FCKUSTOM_FOOTER_KUSTOM_LOGO" }) }} {{ translate({ ident: "FCKUSTOM_DESIGN" }) }}
+                                                    </td>
+                                                </tr>
+                                                <tr class="dark">
+                                                    <td class="half">
+                                                        <input type="radio" id="logo-black"
+                                                               name="confstrs[sKustomFooterValue]"
+                                                               value="logoBlack"
+                                                               {% if confstrs.sKustomFooterValue == 'logoBlack' %}checked="checked"{% endif %}>
+                                                                <img class="" src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/img/') }}kustom-logo.png">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Design options -->
+                <div class="kustom-row">
+                    <div class="row-label">
+                        <div class="sign plus"></div>
+                        <div class="text ">
+                            {{ translate({ ident: "FCKUSTOM_CHECKOUT_DESIGN" }) }}
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="rows-wrapper">
+                        <table class="config-options btm-bordered">
+                            <tbody>
+                            <tr class="dark">
+                                <td class="name-bold" colspan="3">
+                                    {{ translate({ ident: "FCKUSTOM_COLOR_SETTINGS" }) }}
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_BUTTON" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_button]"
+                                               value="{{ confaarrs.aKustomDesign.color_button }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_BUTTON_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_BUTTON_TEXT" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_button_text]"
+                                               value="{{ confaarrs.aKustomDesign.color_button_text }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_BUTTON_TEXT_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_CHECKBOX" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_checkbox]"
+                                               value="{{ confaarrs.aKustomDesign.color_checkbox }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_DESIGN_CHECKBOX_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_CHECKBOX_CHECKMARK" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_checkbox_checkmark]"
+                                               value="{{ confaarrs.aKustomDesign.color_checkbox_checkmark }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_DESIGN_CHECKBOX_CHECKMARK_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_HEADER" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_header]"
+                                               value="{{ confaarrs.aKustomDesign.color_header }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_HEADER_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_LINK" }) }}
+                                </td>
+                                <td class="input w460">
+                                    <div class="color-picker">
+                                        <input class="color {hash:true,required:false}"
+                                               name="confaarrs[aKustomDesign][color_link]"
+                                               value="{{ confaarrs.aKustomDesign.color_link }}">
+                                    </div>
+                                </td>
+                                <td class="info-block">
+                                <span class="kl-tooltip"
+                                      title="{{ translate({ ident: "FCKUSTOM_KCO_LINK_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table class="config-options">
+                            <tbody>
+                            <tr class="dark">
+                                <td class="name-bold" colspan="3">
+                                    {{ translate({ ident: "FCKUSTOM_RADIUS_SETTINGS" }) }}
+                                </td>
+                            </tr>
+                            <tr class="dark">
+                                <td class="name">
+                                    {{ translate({ ident: "FCKUSTOM_BORDER_RADIUS" }) }}
+                                </td>
+                                <td>
+                                    <div class="input w460">
+                                        <input class="radius small pull-left" maxlength="4"
+                                               name="confaarrs[aKustomDesign][radius_border]"
+                                               style="border-radius: {{ confaarrs.aKustomDesign.radius_border }};"
+                                               value="{{ confaarrs.aKustomDesign.radius_border }}">
+                                        <input class="range small pull-left" type="range" min="0" max="20"
+                                               value="{{ confaarrs.aKustomDesign.radius_border|slice(0, -2) }}"/>
+                                    </div>
+                                    <script>
+                                        (function () {
+                                            var $text = $('input.radius');
+                                            var $slider = $('input.range');
+
+                                            $text.on('change', function () {
+                                                var num = parseInt(this.value.replace(/^[^0-9]+/, ''), 10);
+                                                if (num > 20) {
+                                                    num = 20;
+                                                } else if (isNaN(num)) {
+                                                    this.value = '';
+                                                    $slider.val(0);
+
+                                                    return;
+                                                }
+                                                this.value = num + 'px';
+                                                $(this).css('border-radius', num + 'px');
+                                                $slider.val(num)
+                                            });
+                                            $slider.on('input', function () {
+                                                $text.val(this.value + 'px');
+                                                $text.css('border-radius', this.value + 'px');
+                                            });
+                                        })();
+                                    </script>
+                                </td>
+                                <td class="info-block">
+                                    <span class="kl-tooltip"
+                                          title="{{ translate({ ident: "FCKUSTOM_KCO_BORDER_RADIUS_TOOLTIP" }) }}">
+                                    <i class="fa fa-question fa-lg" aria-hidden="true"></i>
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="messagebox info">
+                        <p>{{ "FCKUSTOM_CHANGES_SAVED"|translate }}</p>
+                    </div>
+                    <div class="btn-center">
+                        <input type="submit" name="save" class="btn-save" value="{{ translate({ ident: "GENERAL_SAVE" }) }}"
+                               id="form-save-button" {{ readonly }}>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_admin_lib.js') }}"></script>
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_design.js') }}"></script>
+
+

@@ -1,0 +1,12 @@
+{% extends "page/checkout/order.html.twig" %}
+
+{% block checkout_order_next_step_bottom %}
+    {{ parent() }}
+
+    {% if payment.oxpayments__oxid.value != 'bestitamazon' %}
+        <script type="javascript/text">
+            if(typeof amazon !== 'undefined')
+                delete amazon;
+        </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% if oViewConf.getShowVouchers() and oxcmp_basket.getVoucherDiscValue() %}
+    {% set currency = oView.getActCurrency() %}
+    {% for key, sVoucher in oxcmp_basket.getVouchers() %}
+    <div class="couponData">
+        <strong>
+            <span>
+                {{ translate({ ident: "COUPON" }) }}&nbsp;({{ translate({ ident: "NUMBER_2" }) }} {{ sVoucher.sVoucherNr }})
+            </span>
+
+            <a href="{{ oViewConf.getSslSelfLink() }}&amp;cl=KustomAjax&amp;fnc=removeVoucher&amp;voucherId={{ sVoucher.sVoucherId }}&amp;stoken={{ oViewConf.getSessionChallengeToken() }}" class="removeFn text-danger" rel="nofollow">
+                <i class="fa fa-times"></i>
+                {{ translate({ ident: "REMOVE" }) }}
+            </a>
+
+            <span id="voucherAmount">
+                {{ format_price(sVoucher.dVoucherdiscount*-1, { currency: currency }) }}
+            </span>
+        </strong>
+    </div>
+    {% endfor %}
+{% endif %}

@@ -1,0 +1,8 @@
+{% extends "include/admin_payment_main_form.html.twig" %}
+{% block admin_payment_main_form %}
+    {{ parent() }}
+    {% if isKustomPayment %}
+        {{ script({ add: 'document.getElementsByName("editval[oxpayments__oxaddsum]")[0].disabled = "disabled";', dynamic: __oxid_include_dynamic }) }}
+        {{ script({ add: 'document.getElementsByName("editval[oxpayments__oxaddsumtype]")[0].disabled = "disabled";', dynamic: __oxid_include_dynamic }) }}
+    {% endif %}
+{% endblock %}

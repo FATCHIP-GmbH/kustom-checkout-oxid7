@@ -1,0 +1,48 @@
+<div class="col-sm-{% if oViewConf.isUserLoggedIn() and (savedAddresses == false or not shippingAddressAllowed) %}12{% else %}6{% endif %}">
+    {% set couponUsed_1 = oViewConf.getShowVouchers() %}
+    {% set couponUsed_2 = oxcmp_basket.getVoucherDiscValue() %}
+    <div class="drop-container {% if couponUsed_1 and couponUsed_2 %}active{% endif %}" id="kustomVouchersWidget">
+        <div class="drop-trigger">
+            <div class="kustom-label">
+                <span class="glyphicon glyphicon-star pull-left" aria-hidden="true"></span>
+                <span class="kustom-voucher-label">{{ translate({ ident: "FCKUSTOM_OUTSIDE_VOUCHER" }) }}</span>
+                <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div class="drop-content" id="kustomVoucherWidget" {% if couponUsed_1 and couponUsed_2 %}style="display: block;"{% endif %}">
+            <div class="voucherData">
+                {% include '@fckustom/checkout/inc/fckustom_checkout_voucher_data' %}
+            </div>
+            <div>
+                <form name="voucher" action="{{ oViewConf.getSslSelfLink() }}" method="post" role="form">
+                    <div class="" id="coupon">
+                        <div class="hidden">
+                            {{ oViewConf.getHiddenSid()|raw }}
+                            <input type="hidden" name="cl" value="KustomAjax">
+                            <input type="hidden" name="fnc" value="addVoucher">
+                            <input type="hidden" name="CustomError" value="basket">
+                        </div>
+
+                        <div class="mb-3 form-floating">
+                            <input type="text" name="voucherNr" size="30"
+                                   class="form-control"
+                                   id="input_voucherNr"
+                                   placeholder="{{ translate({ ident: "ENTER_COUPON_NUMBER" }) }}"
+                                   required="required">
+                            <label class="req sr-only"
+                                   for="input_voucherNr">{{ translate({ ident: "ENTER_COUPON_NUMBER" }) }}</label>
+                        </div>
+                        <div class="form-group">
+
+                            <button type="submit" id="submitVoucher"
+                                    class="btn btn-primary">{{ translate({ ident: "REDEEM_COUPON" }) }}
+                            </button>
+                            <div class="help-block"></div>
+                        </div>
+                        <div class="help-block"></div>
+                    </div>
+                </form>
+            </div>
+    </div>
+</div>
+</div>

@@ -1,0 +1,13 @@
+{% extends "page/details/inc/productmain.html.twig" %}
+
+{% block details_productmain_variantselections %}
+    {{ parent() }}
+
+    {{ script({ add: "$('.selectorsBox a').on('change',refreshKustomMessage());", dynamic: __oxid_include_dynamic }) }}
+    <script>
+        function refreshKustomMessage() {
+            window.KustomOnsiteService = window.KustomOnsiteService || [];  // Making sure that data layer exists in case JavaScript Library is loaded later for any reason
+            window.KustomOnsiteService.push({eventName: 'refresh-placements'}); // Push the event to the data layer
+        }
+    </script>
+{% endblock %}

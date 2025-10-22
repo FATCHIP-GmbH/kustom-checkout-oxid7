@@ -1,0 +1,296 @@
+{% include "headitem.html.twig" with {title: "GENERAL_ADMIN_TITLE"|translate} %}
+<style>
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+    .table > thead > tr{
+        text-align: left;
+    }
+
+    .table > thead > tr > th,
+    .table > tbody > tr > th,
+    .table > tfoot > tr > th,
+    .table > thead > tr > td,
+    .table > tbody > tr > td,
+    .table > tfoot > tr > td {
+        padding: 8px;
+        line-height: 1.42857143;
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+
+    .table > thead > tr > th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .table > caption + thead > tr:first-child > th,
+    .table > colgroup + thead > tr:first-child > th,
+    .table > thead:first-child > tr:first-child > th,
+    .table > caption + thead > tr:first-child > td,
+    .table > colgroup + thead > tr:first-child > td,
+    .table > thead:first-child > tr:first-child > td {
+        border-top: 0;
+    }
+
+    .table > tbody + tbody {
+        border-top: 2px solid #ddd;
+    }
+
+    .table .table {
+        background-color: #fff;
+    }
+
+    .table-condensed > thead > tr > th,
+    .table-condensed > tbody > tr > th,
+    .table-condensed > tfoot > tr > th,
+    .table-condensed > thead > tr > td,
+    .table-condensed > tbody > tr > td,
+    .table-condensed > tfoot > tr > td {
+        padding: 5px;
+    }
+
+    .table-bordered {
+        border: 1px solid #ddd;
+    }
+
+    .table-bordered > thead > tr > th,
+    .table-bordered > tbody > tr > th,
+    .table-bordered > tfoot > tr > th,
+    .table-bordered > thead > tr > td,
+    .table-bordered > tbody > tr > td,
+    .table-bordered > tfoot > tr > td {
+        border: 1px solid #ddd;
+    }
+
+    .table-bordered > thead > tr > th,
+    .table-bordered > thead > tr > td {
+        border-bottom-width: 2px;
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    table col[class*="col-"] {
+        position: static;
+        display: table-column;
+        float: none;
+    }
+
+    table td[class*="col-"],
+    table th[class*="col-"] {
+        position: static;
+        display: table-cell;
+        float: none;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .alert .alert-link {
+        font-weight: bold;
+    }
+
+    .alert-link {
+        text-decoration: underline;
+    }
+
+    .alert-link:hover {
+        text-decoration: none;
+    }
+
+    .alert-success {
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+        color: #3c763d;
+    }
+
+    .alert-success .alert-link {
+        color: #2b542c;
+    }
+
+    .alert-warning {
+        background-color: #fcf8e3;
+        border-color: #faebcc;
+        color: #8a6d3b;
+    }
+
+    .alert-warning .alert-link {
+        color: #66512c;
+    }
+
+    .portal-button {
+        margin: 5px 0 0 0;
+    }
+</style>
+{% if readonly %}
+    {% set readonly = "readonly disabled" %}
+{% else %}
+    {% set readonly = "" %}
+{% endif %}
+
+<form name="transfer" id="transfer" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+    {{ oViewConf.getHiddenSid()|raw }}
+    <input type="hidden" name="oxid" value="{{ oxid }}">
+    <input type="hidden" name="cl" value="KustomOrders">
+</form>
+{% if wrongCredentials %}
+    {% set alertMessage = wrongCredentials %}
+    {% set alertClass = "alert-warning" %}
+{% endif %}
+{% if oOrder %}
+    {% set kustomLink = oView.getKustomPortalLink() %}
+    {% if wrongCredentials %}
+        {% set alertMessage = wrongCredentials %}
+        {% set alertClass = "alert-warning" %}
+    {% elseif cancelled %}
+        {% set alertMessage_1 = "KUSTOM_ORDER_IS_CANCELLED"|translate %}
+        {% set alertMessage_2 = "KUSTOM_SEE_ORDER_IN_PORTAL"|translate(kustomLink) %}
+        {% set alertMessage = alertMessage_1|cat(alertMessage_2) %}
+        {% set alertClass = "alert-warning" %}
+    {% elseif unauthorizedRequest %}
+        {% set alertMessage = unauthorizedRequest %}
+        {% set alertClass = "alert-warning" %}
+    {% else %}
+        {% if inSync %}
+            {% set alertMessage = "KUSTOM_SEE_ORDER_IN_PORTAL"|translate(kustomLink) %}
+            {% set alertClass = "alert-success" %}
+        {% else %}
+            {% set alertMessage_1 = "KUSTOM_ORDER_NOT_IN_SYNC"|translate %}
+            {% set alertMessage_2 = "KUSTOM_SEE_ORDER_IN_PORTAL"|translate(kustomLink) %}
+            {% set alertMessage = alertMessage_1|cat(alertMessage_2) %}
+            {% set alertClass = "alert-warning" %}
+        {% endif %}
+    {% endif %}
+    <div class="alert {{ alertClass }}">
+        <span style='float: left'>{{ alertMessage|raw }} {% if not wrongCredentials %}(Merchant Id: {{ sMid }}){% endif %}</span>
+        <span style='float: right'>
+            {% if oOrder.oxorder__fckustom_orderid.value %}
+                {% set fckustom_orderid = oOrder.oxorder__fckustom_orderid.value %}
+            {% else %}
+                {% set fckustom_orderid = " - " %}
+            {% endif %}
+            {% if sKustomRef == '' %}
+                {% set sKustomRef = " - " %}
+            {% endif %}
+
+            {% if oOrder.oxorder__fckustom_kustompaymentmethod.value %}
+                {% set fckustom_paymentmethod = oOrder.oxorder__fckustom_kustompaymentmethod.value %}
+                <strong>Kustom order ID:</strong> <i>{{ fckustom_orderid }}</i>
+                <strong>Kustom reference:</strong> <i>{{ sKustomRef }}</i>
+                <strong>Kustom payment method:</strong> <i>{{ translate({ ident: "FCKUSTOM_AUTHPAYMENTMETHOD_"|cat(oOrder.oxorder__fckustom_kustompaymentmethod.value) }) }}</i>
+            {% else %}
+                <strong>Kustom order ID:</strong> <i>{{ fckustom_orderid }}</i>
+                <strong>Kustom reference:</strong> <i>{{ sKustomRef }}</i>
+                <strong>Kustom payment method:</strong> <i>{{ translate({ ident: "FCKUSTOM_AUTHPAYMENTMETHOD_unknown" }) }}</i>
+            {% endif %}
+        </span>
+        <div style='clear:both'></div>
+    </div>
+    {% if aCaptures %}
+        <div>
+            <h2>{{ translate({ ident: "KUSTOM_CAPTURES" }) }}</h2>
+            {% if canRefund and not aRefunds %}
+                <form name="refund" id="refund" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+                    {{ oViewConf.getHiddenSid()|raw }}
+                    <input type="hidden" name="cl" value="KustomOrders">
+                    <input type="hidden" name="oxid" value="{{ oxid }}">
+                    <input type="hidden" name="fnc" value="refundFullOrder">
+
+                    <input type="submit" value="{{ translate({ ident: "FCKUSTOM_COMPLETE_REFUND" }) }}" class="alert-warning">
+                </form>
+            {% endif %}
+            <table class="table table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th>{{ translate({ ident: "KUSTOM_CAPTURE_ID" }) }}</th>
+                    <th>{{ translate({ ident: "KUSTOM_CAPTURE_REFERENCE" }) }}</th>
+                    <th>{{ translate({ ident: "KUSTOM_CAPTURE_AMOUNT" }) }}</th>
+                    <th>{{ translate({ ident: "KUSTOM_CAPTURE_DATE" }) }}</th>
+                </tr>
+                </thead>
+                {% for capture in aCaptures %}
+                    <tr>
+                        <td>
+                            {{ capture.capture_id|raw }}
+                        </td>
+                        <td>
+                            {{ capture.kustom_reference|raw }}
+                        </td>
+                        <td>
+                            {{ oView.formatPrice(capture.captured_amount)|raw }}
+                        </td>
+                        <td>
+                            {{ capture.captured_at|raw }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% if aRefunds %}
+            <div>
+                <h2>{{ translate({ ident: "KUSTOM_REFUNDS" }) }}</h2>
+                <table class="table table-condensed table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ translate({ ident: "KUSTOM_REFUND_AMOUNT" }) }}</th>
+                        <th>{{ translate({ ident: "KUSTOM_REFUND_DESCRIPTION" }) }}</th>
+                        <th>{{ translate({ ident: "KUSTOM_REFUND_DATE" }) }}</th>
+                    </tr>
+                    </thead>
+                    {% for refund in aRefunds %}
+                        <tr>
+                            <td>
+                                {{ oView.formatPrice(refund.refunded_amount) }}
+                            </td>
+                            <td>
+                                {{ refund.description|raw }}
+                            </td>
+                            <td>
+                                {{ refund.refunded_at|date('Y-m-d H:i:s') }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    {% elseif not cancelled and not wrongCredentials and not unauthorizedRequest and inSync %}
+        <div class="portal-button">
+            <form name="capture" id="capture" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+                {{ oViewConf.getHiddenSid()|raw }}
+                <input type="hidden" name="cl" value="KustomOrders">
+                <input type="hidden" name="oxid" value="{{ oxid }}">
+                <input type="hidden" name="fnc" value="captureFullOrder">
+
+                <input type="submit" value="{{ translate({ ident: "KUSTOM_CAPTURE_FULL_ORDER" }) }}" class="alert-success">
+            </form>
+        </div>
+        <div class="portal-button">
+            <form name="cancel" id="cancel" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+                {{ oViewConf.getHiddenSid()|raw }}
+                <input type="hidden" name="cl" value="KustomOrders">
+                <input type="hidden" name="oxid" value="{{ oxid }}">
+                <input type="hidden" name="fnc" value="cancelOrder">
+
+                <input type="submit" value="{{ translate({ ident: "KUSTOM_CANCEL_ORDER" }) }}" class="alert-warning">
+            </form>
+        </div>
+    {% endif %}
+{% else %}
+    {% if wrongCredentials %}
+        <div class="alert {{ alertClass }}">
+            {{ alertMessage|raw }}
+        </div>
+    {% else %}
+        <div class="messagebox">{{ sMessage|raw }}</div>
+    {% endif %}
+{% endif %}
+
+{% include "bottomitem.html.twig" %}

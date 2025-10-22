@@ -1,0 +1,20 @@
+{
+  "name": "kustom/oxid-v7",
+  "description": "Kustom Checkout module for OXID eShop version 7.X",
+  "type": "oxideshop-module",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=8.0",
+    "rmccue/requests": "^1.0",
+    "viison/address-splitter": "^0.3.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "phpunit/phpunit-selenium": ">=1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Fatchip\\FcKustom\\": "./"
+    }
+  }
+}

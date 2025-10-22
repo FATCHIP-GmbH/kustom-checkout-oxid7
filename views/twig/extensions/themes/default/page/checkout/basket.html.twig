@@ -1,0 +1,19 @@
+{% extends "page/checkout/basket.html.twig" %}
+
+{% block checkout_basket_next_step_top %}
+    {{ parent() }}
+
+    {% if openAmazonLogin %}
+        <script type="text/javascript">
+            window.onload = clickWidgetButton;
+
+            function clickWidgetButton() {
+                var theButton = document.getElementById('OffAmazonPaymentsWidgets0');
+                theButton.click();
+            }
+        </script>
+    {% endif %}
+
+    {{ style({ include: oViewConf.getModuleUrl('fckustom', 'out/src/css/fckustom_style.css') }) }}
+
+{% endblock %}

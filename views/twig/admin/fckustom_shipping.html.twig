@@ -1,0 +1,97 @@
+{% set lang_tag = "" %}
+{% for language in languages %}
+    {% if (language.id is same as editlanguage) %}
+        {% set lang_tag = language.abbr|upper %}
+    {% endif %}
+{% endfor %}
+
+<link rel="stylesheet" href="{{ oViewConf.getResourceUrl() }}main.css">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/fckustom_admin2.css') }}">
+<link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster.bundle.min.css') }}">
+<link rel="stylesheet"
+      href="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/css/tooltipster-sideTip-light.min.css') }}">
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/jquery-1.12.4.min.js') }}"></script>
+<script type="text/javascript"
+        src="{{ oViewConf.getModuleUrl('fckustom', 'out/src/js/libs/tooltipster.bundle.min.js') }}"></script>
+
+
+<div class="{{ box|default('box') }}" style="{% if not box and not bottom_buttons %}height: 100%;{% endif %}">
+    <div class="main-container">
+        {% include "@fckustom/admin/fckustom_header.html.twig" with {title: "FCKUSTOM_SHIPPING_KCO"|translate, desc: "FCKUSTOM_SHIPPING_KCO_DESC"|translate} %}
+        <hr>
+        <div class="kustom-expandable-list">
+            <form name="myedit" id="myedit" method="post" action="{{ oViewConf.getSelfLink()|raw }}"
+                  enctype="multipart/form-data">
+            <input type="hidden" name="MAX_FILE_SIZE" value="{{ iMaxUploadFileSize }}">
+            {{ oViewConf.getHiddenSid()|raw }}
+            <input type="hidden" name="cl" value="KustomShipping">
+            <input type="hidden" name="fnc" value="save">
+
+            <table class="kustom-conf-table fix1">
+                <tr class="bg-grey">
+                    <td colspan="3" class="inner-table-wrapper">
+                        {% if KCOShippingSets|length > 0 %}
+                            {% for shippingId, oDelSet in KCOShippingSets %}
+                                <table class="inner">
+                                    <tbody>
+                                    <tr class="dark">
+                                        <td class="conf-label-2">{{ oDelSet.oxdeliveryset__oxtitle.value }}</td>
+                                        <td>
+                                            <div class="input">
+                                                <div class="selector shipping-method-selector">
+                                                    <div class="selector__menu">
+                                                        <ul class="selector__choices">
+                                                            {% for i, methodName in KCOShippingMethods %}
+                                                                <li class="selector__item{% if confaarrs.aarrKustomShippingMap[shippingId] is same as(methodName) %}--selected{% endif %}">
+                                                                    <a href="#" data-value="{{ methodName }}">
+                                                                        {{ methodName }}
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        <input type="hidden"
+                                                               name="confaarrs[aarrKustomShippingMap][{{ shippingId }}]"
+                                                               value="{{ confaarrs.aarrKustomShippingMap[shippingId] }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        {% else %}
+                            {{ translate({ ident: "FCKUSTOM_PACKSTATION_NO_SHIPPING_SET" }) }}
+                        {% endif %}
+
+                    </td>
+                </tr>
+            </table>
+            <div class="btn-center">
+                <input type="submit" name="save" class="btn-save" value="{{ translate({ ident: "GENERAL_SAVE" }) }}"
+                       id="form-save-button" {{ readonly }}>
+            </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ oViewConf.getModuleUrl('fckustom', 'out/admin/src/js/fckustom_admin_lib.js') }}"></script>
+
+<script>
+{% capture assign = "jsCode" %}
+$('.shipping-method-selector').each(function () {
+    new Selector2({
+        node: this,
+        fromOptions: false,
+        emptyOption: 'keep'
+    });
+});
+{% endcapture %}
+{{ script({ add: jsCode, dynamic: __oxid_include_dynamic }) }}
+</script>
+{{ script({ dynamic: __oxid_include_dynamic }) }}

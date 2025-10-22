@@ -1,0 +1,35 @@
+{% extends "page/checkout/thankyou.html.twig" %}
+
+{% block checkout_thankyou_info %}
+    {% if sKustomIframe %}
+        {{ translate({ ident: "REGISTERED_YOUR_ORDER", args: klOrder.oxorder__oxordernr.value }) }}
+        <div class="kustom-iframe-container">
+            {{ sKustomIframe|raw }}
+            {{ script({ include: oViewConf.getModuleUrl('fckustom', 'out/src/js/fckustom_checkout_handler.js'), priority: 10, dynamic: __oxid_include_dynamic }) }}
+        </div>
+    {% else %}
+        {{ translate({ ident: "THANK_YOU_FOR_ORDER" }) }} {{ oxcmp_shop.oxshops__oxname.value }}.
+        <br>
+        {{ translate({ ident: "REGISTERED_YOUR_ORDER", args: order.oxorder__oxordernr.value }) }}
+        <br>
+
+        {% if order.oxorder__fckustom_kustompaymentmethod.value %}
+            {{ translate({ ident: "FCKUSTOM_AUTHPAYMENTMETHOD" }) }}
+            {{ translate({ ident: "FCKUSTOM_AUTHPAYMENTMETHOD_"|cat(order.oxorder__fckustom_kustompaymentmethod.value) }) }}
+            <br>
+        {% endif %}
+
+        {% if not oView.getMailError() %}
+            {{ translate({ ident: "MESSAGE_YOU_RECEIVED_ORDER_CONFIRM" }) }}
+            <br>
+        {% else %}
+            <br>
+            {{ translate({ ident: "MESSAGE_CONFIRMATION_NOT_SUCCEED" }) }}
+            <br>
+        {% endif %}
+        <br>
+        {{ translate({ ident: "MESSAGE_WE_WILL_INFORM_YOU" }) }}
+        <br>
+        <br>
+    {% endif %}
+{% endblock %}
