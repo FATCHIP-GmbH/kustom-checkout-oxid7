@@ -14,10 +14,10 @@
 
     <coverage includeUncoveredFiles="true">
         <include>
-            <directory suffix=".php">../Component</directory>
-            <directory suffix=".php">../Controller</directory>
-            <directory suffix=".php">../Core</directory>
-            <directory suffix=".php">../Model</directory>
+            <directory suffix=".php">/var/www/vendor/kustom/oxid-v7/Component</directory>
+            <directory suffix=".php">/var/www/vendor/kustom/oxid-v7/Controller</directory>
+            <directory suffix=".php">/var/www/vendor/kustom/oxid-v7/Core</directory>
+            <directory suffix=".php">/var/www/vendor/kustom/oxid-v7/Model</directory>
         </include>
     </coverage>
 
