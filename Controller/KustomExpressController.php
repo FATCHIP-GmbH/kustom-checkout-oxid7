@@ -181,6 +181,12 @@ class KustomExpressController extends FrontendController
             Registry::getUtils()->redirect(Registry::getConfig()->getShopSecureHomeURL() . 'cl=start', true, 301);
 
             return $this->_sThisTemplate;
+        } catch (KustomClientException $oEx) {
+            KustomUtils::fullyResetKustomSession();
+            Registry::get(UtilsView::class)->addErrorToDisplay(
+                Registry::getLang()->translateString('KUSTOM_GENERAL_ERROR', null, true));
+            Registry::getUtils()->redirect(Registry::getConfig()->getShopSecureHomeURL() . 'cl=start', true, 301);
+
         } catch (StandardException $oEx) {
             KustomUtils::logException($oEx);
             KustomUtils::fullyResetKustomSession();
