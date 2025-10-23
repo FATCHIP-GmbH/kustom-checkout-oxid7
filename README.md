@@ -70,4 +70,5 @@ optional_parameters:
 
 ## Documentation ##
 
-You'll find a detailed documentation in German and English here: https://wiki.fatchip.de/public/faqklarna
+You'll find a detailed documentation in German here: https://wiki.fatchip.de/public/faqkustom7
+and in English here: https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki

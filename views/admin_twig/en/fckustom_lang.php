@@ -118,8 +118,8 @@ $aLang = array(
     'FCKUSTOM_ENABLE_PREFILL_NOTIFICATION'       => 'Enable Pre-filling notification',
     'FCKUSTOM_SALUTATION_MANDATORY'              => 'Salutation mandatory',
     'FCKUSTOM_SET_TAC_URI'                       => 'Set terms and conditions URI - mandatory',
-    'FCKUSTOM_SET_CANCEL_URI'                    => 'URL for Cancellation rights - mandatory for KCO and Kustom Express',
-    'FCKUSTOM_SHIPPING_DETAILS'                  => 'URL for Shipping details - mandatory for KCO and Kustom Express',
+    'FCKUSTOM_SET_CANCEL_URI'                    => 'URL for Cancellation rights - mandatory ',
+    'FCKUSTOM_SHIPPING_DETAILS'                  => 'URL for Shipping details - mandatory',
     'FCKUSTOM_NO_VALIDATION_NEEDED'              => 'No validation',
     'FCKUSTOM_VALIDATION_IGNORE_TIMEOUTS_NEEDED' => 'Perform validation, but ignore validation timeouts',
     'FCKUSTOM_SUCCESSFUL_VALIDATION_NEEDED'      => 'Require successful validation',
@@ -146,21 +146,21 @@ $aLang = array(
     'FCKUSTOM_EXTERNAL_PAYMENTS_ADMIN_DESC'   =>
         'Here you can configure External Payment Methods and External Checkouts to be included inside the Kustom Checkout Iframe. 
         For a detailed description of the different settings please see the tool-tip function 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">documentation</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki" target="_blank">documentation</a> 
 or contact Kustom support.',
     'FCKUSTOM_EXTRA_MERCHANT_DATA_ADMIN_DESC' => 'Here you can configure the Extra Merchant Data to use with the Kustom extension 
 for OXID. For a detailed description of the different settings please see the tool-tip function 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">documentation</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki" target="_blank">documentation</a> 
 or contact Kustom support.',
     'FCKUSTOM_DESIGN_SETTINGS_ADMIN_DESC'     => 'Here you can configure the Design Settings to use with the Kustom extension 
 for OXID. For a detailed description of the different settings please see the tool-tip function 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">documentation</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki" target="_blank">documentation</a> 
 or contact Kustom support.',
     'FCKUSTOM_GENERAL_SETTINGS_ADMIN_DESC'    => 'For a detailed description of the different settings please see the tool-tip function
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">documentation</a> or contact Kustom support.',
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki" target="_blank">documentation</a> or contact Kustom support.',
     'FCKUSTOM_CONFIGURATION_KCO_ADMIN_DESC'   => 'On this page you can configure the Kustom Checkout specific settings. 
 For a detailed description of the different settings please see the tool-tip function 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">documentation</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, see the <a class="cl-ku" href="https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki" target="_blank">documentation</a> 
 or contact Kustom support.',
 
     'FCKUSTOM_PAYMENT_METHOD'          => 'Payment method',
@@ -171,7 +171,7 @@ or contact Kustom support.',
     'FCKUSTOM_IMAGE_TIP_69x24'         => 'Dimensions: 69x24 Pixel',
     'FCKUSTOM_IMAGE_TIP_276x48'        => 'Dimensions: 276x48 Pixel',
     'FCKUSTOM_USER_GUIDE_DESCRIPTION'  => 'View the user manual for the Kustom module for OXID eShop here.',
-    'FCKUSTOM_USER_GUIDE_LINK'         => 'https://github.com/Kustom-Checkout/oxid-v7/wiki',
+    'FCKUSTOM_USER_GUIDE_LINK'         => 'https://github.com/FATCHIP-GmbH/kustom-checkout-oxid7/wiki',
     'FCKUSTOM_USER_GUIDE_BUTTON'         => 'User guide',
 
     'FCKUSTOM_CHOOSE' => 'Choose',
@@ -324,7 +324,7 @@ or contact Kustom support.',
     'FCKUSTOM_IS_BUTTON_SETTINGS_TYPE' => 'Type',
     'FCKUSTOM_IS_SETTING_PHONE_MANDATORY' => 'Phone number mandatory',
     'FCKUSTOM_IS_SETTING_PHONE_MANDATORY_TOOLTIP' => 'Please choose whether you want to make the phone number mandatory.',
-    'FCKUSTOM_SHIPPING_KCO' => 'Shipping sets assignments for the Kustom Checkout and Kustom Express',
+    'FCKUSTOM_SHIPPING_KCO' => 'Shipping sets assignments for the Kustom Checkout',
     'FCKUSTOM_SHIPPING_KCO_DESC' => 'Please assign your defined shipping sets to the corresponding Kustom labels. By this assignment you can amongst others enable Packstation deliveries.',
     'FCKUSTOM_SHIPPING_SETTINGS' => 'Shipping sets',
     'FCKUSTOM_COMPLETE_REFUND' => 'Refund complete order',

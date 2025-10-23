@@ -118,8 +118,8 @@ $aLang = array(
     'FCKUSTOM_ENABLE_PREFILL_NOTIFICATION'          => 'Pre-filling Hinweis aktivieren',
     'FCKUSTOM_SALUTATION_MANDATORY'                 => 'Anrede ist Pflichtfeld',
     'FCKUSTOM_SET_TAC_URI'                          => 'URL zu Ihren AGB - Pflichtfeld',
-    'FCKUSTOM_SET_CANCEL_URI'                       => 'URL zum Widerrufsrecht - Pflichtfeld für KCO und Kustom Express',
-    'FCKUSTOM_SHIPPING_DETAILS'                     => 'URL zu Versanddetails - Pflichtfeld für KCO und Kustom Express',
+    'FCKUSTOM_SET_CANCEL_URI'                       => 'URL zum Widerrufsrecht - Pflichtfeld',
+    'FCKUSTOM_SHIPPING_DETAILS'                     => 'URL zu Versanddetails - Pflichtfeld',
     'FCKUSTOM_NO_VALIDATION_NEEDED'                 => 'Keine Validierung',
     'FCKUSTOM_VALIDATION_IGNORE_TIMEOUTS_NEEDED'    => 'Validierung durchführen, aber Timeouts ignorieren',
     'FCKUSTOM_SUCCESSFUL_VALIDATION_NEEDED'         => 'Erfolgreiche Validierung erforderlich',
@@ -147,22 +147,22 @@ $aLang = array(
     'FCKUSTOM_EXTERNAL_PAYMENTS_ADMIN_DESC'   =>
         'Hier können Sie externe Bezahlarten und externe Checkouts zur Einbindung innerhalb des Kustom Checkout Iframes konfigurieren. 
         Für eine detaillierte Beschreibung der verschiedenen Einstellungen beachten Sie bitte die Tooltips 
-        <i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">Handbuch</a> 
+        <i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://wiki.fatchip.de/public/faqkustom7" target="_blank">Handbuch</a> 
         oder wenden Sie sich an den Kustom Support',
     'FCKUSTOM_EXTRA_MERCHANT_DATA_ADMIN_DESC' => 'Hier können Sie konfigurieren, ob ggf. Extra Merchant Data an Kustom übertragen werden soll. 
 Für eine detaillierte Beschreibung der verschiedenen Einstellungen beachten Sie bitte die Tooltips 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">Handbuch</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://wiki.fatchip.de/public/faqkustom7" target="_blank">Handbuch</a> 
 oder wenden Sie sich an den Kustom Support',
     'FCKUSTOM_DESIGN_SETTINGS_ADMIN_DESC'     => 'Hier können Sie die Design Einstellungen zur Verwendung mit dem Kustom Modul für den OXID eShop konfigurieren. 
 Für eine detaillierte Beschreibung der verschiedenen Einstellungen beachten Sie bitte die Tooltips 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">Handbuch</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://wiki.fatchip.de/public/faqkustom7" target="_blank">Handbuch</a> 
 oder wenden Sie sich an den Kustom Support',
     'FCKUSTOM_GENERAL_SETTINGS_ADMIN_DESC'    => 'Für eine detaillierte Beschreibung der verschiedenen Einstellungen beachten Sie bitte die Tooltips 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">Handbuch</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://wiki.fatchip.de/public/faqkustom7" target="_blank">Handbuch</a> 
 oder wenden Sie sich an den Kustom Support.',
     'FCKUSTOM_CONFIGURATION_KCO_ADMIN_DESC'   => 'Auf dieser Seite können Sie die Kustom Checkout spezifischen Einstellungen konfigurieren. 
 Für eine detaillierte Beschreibung der verschiedenen Einstellungen beachten Sie bitte die Tooltips 
-<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://github.com/Kustom-Checkout/oxid-v7/wiki" target="_blank">Handbuch</a> 
+<i class="fa fa-question-circle-o" aria-hidden="true"></i>, lesen Sie das <a class="cl-ku" href="https://wiki.fatchip.de/public/faqkustom7" target="_blank">Handbuch</a> 
 oder wenden Sie sich an den Kustom Support',
 
     'FCKUSTOM_PAYMENT_METHOD'                 => 'Zahlungsart',
@@ -173,7 +173,7 @@ oder wenden Sie sich an den Kustom Support',
     'FCKUSTOM_IMAGE_TIP_69x24'                => 'Bildgröße: 69x24 Pixel',
     'FCKUSTOM_IMAGE_TIP_276x48'               => 'Bildgröße: 276x48 Pixel',
     'FCKUSTOM_USER_GUIDE_DESCRIPTION'         => 'Das Benutzerhandbuch für das Kustom Modul für den OXID eShop können Sie hier einsehen.',
-    'FCKUSTOM_USER_GUIDE_LINK'         => 'https://github.com/Kustom-Checkout/oxid-v7/wiki',
+    'FCKUSTOM_USER_GUIDE_LINK'         => 'https://wiki.fatchip.de/public/faqkustom7',
     'FCKUSTOM_USER_GUIDE_BUTTON'         => 'Benutzerhandbuch',
 
     'FCKUSTOM_CHOOSE' => 'Wählen',
