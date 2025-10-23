@@ -40,16 +40,6 @@
                     this.$input.attr('pattern', this.$input.attr('data-pattern'));
                     this.$input.removeAttr('data-pattern');
                 }
-
-                if(this.name.match(/oxpayments__fckustom_externalcheckout/)) {
-
-                    if (this.$input.prop('required')) {
-                        this.$input.prop('required', false);
-                        this.$input.get(0).setCustomValidity('');
-                    } else {
-                        this.$input.prop('required', true);
-                    }
-                }
             }
         });
         var display = $urlsRows.css('display');
