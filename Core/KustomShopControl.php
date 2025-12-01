@@ -24,4 +24,13 @@ class KustomShopControl extends KustomShopControl_parent
 
         return parent::initializeViewObject($sClass, $sFunction, $aParams, $aViewsChain);
     }
+    protected function executeAction($view, $functionName)
+    {
+        //logout User and Reset Session if user is Fake-User and if he leaves checkout during external payment
+        $viewClassName = Registry::getConfig()->getTopActiveView()->getClassKey();
+        if (Registry::getSession()->getVariable("blNeedLogout") && $viewClassName != 'KustomExpress' && $viewClassName != 'order' && $viewClassName != 'thankyou' && $viewClassName != 'ajaxpay') {
+            KustomUtils::fullyResetKustomSession();
+        }
+        parent::executeAction($view, $functionName);
+    }
 }
