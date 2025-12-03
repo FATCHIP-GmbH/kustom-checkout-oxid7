@@ -6,7 +6,7 @@ Kustom Checkout Module for the OXID eShop
 ### Title: Kustom Checkout Module for the OXID eShop
 ### Author: Fatchip GmbH, https://www.fatchip.de
 ### Prefix: fckustom
-### Version: 1.0.0
+### Version: 1.0.1
 ### Link: https://www.kustom.co/checkout
 ### Mail: support@fatchip.de
 
