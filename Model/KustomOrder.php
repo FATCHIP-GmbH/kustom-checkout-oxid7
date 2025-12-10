@@ -263,4 +263,21 @@ class KustomOrder extends KustomOrder_parent
 
         return parent::sendOrderByEmail($oUser, $oBasket, $oPayment);
     }
+
+    /**
+     * Check if an order with the given id already exists and is not a Kustom Checkout order.
+     */
+    public function checkForeignOrderExist($oxid): bool
+    {
+        $masterDb = \OxidEsales\Eshop\Core\DatabaseProvider::getMaster();
+        $params = [
+            ':oxid' => $oxid
+        ];
+        $existingPaymentId = $masterDb->getOne('select OXPAYMENTID from oxorder where oxid = :oxid', $params);
+        if (!empty($existingPaymentId) && $existingPaymentId !== 'kustom_checkout') {
+            return true;
+        }
+
+        return false;
+    }
 }

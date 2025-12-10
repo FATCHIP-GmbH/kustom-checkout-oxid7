@@ -314,6 +314,11 @@ class KustomOrderController extends KustomOrderController_parent
             $iSuccess = $this->kcoExecute($oBasket);
 
             return $this->getNextStep($iSuccess);
+        } else if (Registry::getRequest()->getRequestParameter('kustom_order_id')) {
+            // executing Kustom order but basket has no Kustom paymentId -> basket is not properly init'd, customer must try again
+            KustomUtils::fullyResetKustomSession();
+            Registry::getUtilsView()->addErrorToDisplay('KUSTOM_WENT_WRONG_TRY_AGAIN', false, true);
+            return Registry::getUtils()->redirect($this->selfUrl, true, 302);
         }
 
         // if user is not logged in set the user
@@ -451,6 +456,15 @@ class KustomOrderController extends KustomOrderController_parent
         if (!Registry::getSession()->getVariable('sess_challenge')) {
             $sGetChallenge = Registry::getUtilsObject()->generateUID();
             Registry::getSession()->setVariable('sess_challenge', $sGetChallenge);
+        } else {
+            // Check if the existing session challenge exists in the database in a non-KCO order
+            $orderId = Registry::getSession()->getVariable('sess_challenge');
+            /** @var \Fatchip\FcKustom\Model\KustomOrder $oOrder */
+            $oOrder = oxNew(Order::class);
+            if ($oOrder->checkForeignOrderExist($orderId)) {
+                $sGetChallenge = Registry::getUtilsObject()->generateUID();
+                Registry::getSession()->setVariable('sess_challenge', $sGetChallenge);
+            }
         }
 
         $oBasket->calculateBasket(true);
