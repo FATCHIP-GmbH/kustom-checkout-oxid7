@@ -124,7 +124,7 @@
 
             function insertKustomNotifications() {
                 var temp = document.createElement('div');
-                temp.innerHTML = "{{ lawNoticeTemplate|json_encode|raw }}";
+                temp.innerHTML = {{ lawNoticeTemplate|json_encode|raw }};
                 var noticeBox = temp.firstElementChild;
 
                 var loginForm = document.querySelector('form[name=login]');
