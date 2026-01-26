@@ -81,7 +81,7 @@ $aModule = array(
         'de' => 'Egal was Sie verkaufen, unsere Produkte sind dafür gemacht, Ihren Kunden das beste Erlebnis zu bereiten. Das gefällt nicht nur Ihnen, sondern auch uns! Die Kustom Plugins werden stets auf Herz und Nieren geprüft und können ganz einfach durch Sie oder Ihre technischen Ansprechpartner aktiviert werden. Das nennen wir smoooth. Hier können Sie mit der Komplettlösung, dem Kustom Checkout, Ihre Customer Journey optimieren. Erfahren Sie hier mehr zu Kustom für OXID: <a href="https://www.kustom.co/about</a>',
         'en' => 'No matter what you sell, our products are made to give your customers the best purchase experience. This is not only smoooth for you - it is smoooth for us, too! Kustom plugins are always tested and can be activated by you or your technical contact with just a few clicks. That is smoooth. Here you can optimize your customer journey with the complete Kustom Checkout solution. Find out more about Kustom for OXID: <a href="https://www.kustom.co/about" target="_blank">https://www.kustom.co/about</a>'
     ),
-    'version'     => '1.0.2',
+    'version'     => '1.0.3',
     'author'      => '<a href="https://www.fatchip.de" target="_blank">FATCHIP GmbH</a>',
     'thumbnail'   => '/out/admin/src/img/kustom-logo.png',
     'url'         => 'https://www.kustom.co/about',
