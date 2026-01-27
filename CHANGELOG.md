@@ -1,3 +1,7 @@
+### 1.0.4
+* fix KCO compatibility issue for PayPal OSC Module v2.6.5
+* add the selected payment method to the order and order confirmation email
+
 ### 1.0.3
 * fix JS collisions for Kustom checkout and PayPal OSC module
 
