@@ -67,6 +67,8 @@ class KustomOrderController extends KustomOrderController_parent
      */
     protected $isExternalCheckout = false;
 
+    const UNKNOWN_PAYMENT_ID = 'unknown';
+
     protected function getTimeStamp()
     {
         $dt = new \DateTime();
@@ -336,7 +338,6 @@ class KustomOrderController extends KustomOrderController_parent
     protected function kcoBeforeExecute()
     {
         try {
-            $kcoId = Registry::getSession()->getVariable('kustom_checkout_order_id');
             $oBasket      = Registry::getSession()->getBasket();
             $oKustomOrder = $this->initKustomOrder($oBasket);
             $oKustomOrder->validateKustomB2B();
@@ -477,7 +478,12 @@ class KustomOrderController extends KustomOrderController_parent
             $mgmtClient = $this->getKustomMgmtClient($iso);
             $klarnaOrder = $mgmtClient->getOrder($kcoId);
             $paymentName = strtolower($klarnaOrder['initial_payment_method']['type']);
-            $oOrder->oxorder__fckustom_kustompaymentmethod = new Field($paymentName, Field::T_RAW);;
+            $oOrder->oxorder__fckustom_kustompaymentmethod = new Field($paymentName, Field::T_RAW);
+        } catch (StandardException $e) {
+            $oOrder->oxorder__fckustom_kustompaymentmethod = new Field(self::UNKNOWN_PAYMENT_ID, Field::T_RAW);
+        }
+
+        try {
             $iSuccess = $oOrder->finalizeOrder($oBasket, $this->_oUser);
         } catch (StandardException $e) {
             Registry::getSession()->deleteVariable('kustom_checkout_order_id');
