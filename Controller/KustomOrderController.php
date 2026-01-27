@@ -336,6 +336,7 @@ class KustomOrderController extends KustomOrderController_parent
     protected function kcoBeforeExecute()
     {
         try {
+            $kcoId = Registry::getSession()->getVariable('kustom_checkout_order_id');
             $oBasket      = Registry::getSession()->getBasket();
             $oKustomOrder = $this->initKustomOrder($oBasket);
             $oKustomOrder->validateKustomB2B();
@@ -471,6 +472,12 @@ class KustomOrderController extends KustomOrderController_parent
 
         $oOrder = oxNew(Order::class);
         try {
+            $kcoId = Registry::getSession()->getVariable('kustom_checkout_order_id');
+            $iso = Registry::getSession()->getVariable('sCountryISO');
+            $mgmtClient = $this->getKustomMgmtClient($iso);
+            $klarnaOrder = $mgmtClient->getOrder($kcoId);
+            $paymentName = strtolower($klarnaOrder['initial_payment_method']['type']);
+            $oOrder->oxorder__fckustom_kustompaymentmethod = new Field($paymentName, Field::T_RAW);;
             $iSuccess = $oOrder->finalizeOrder($oBasket, $this->_oUser);
         } catch (StandardException $e) {
             Registry::getSession()->deleteVariable('kustom_checkout_order_id');
@@ -982,5 +989,14 @@ class KustomOrderController extends KustomOrderController_parent
         $street = $addressData['streetName'] ?? '';
         $streetNo = $addressData['houseNumber'] ?? '';
         return array($street, $streetNo);
+    }
+
+    /**
+     * @param $sCountryISO
+     * @return KustomClientBase|KustomOrderManagementClient
+     */
+    protected function getKustomMgmtClient($sCountryISO)
+    {
+        return KustomOrderManagementClient::getInstance($sCountryISO);
     }
 }
