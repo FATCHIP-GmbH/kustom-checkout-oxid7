@@ -35,7 +35,8 @@ class KustomShopControl extends KustomShopControl_parent
             $viewClassName != 'order' &&
             $viewClassName != 'thankyou' &&
             $viewClassName != 'ajaxpay' &&
-            $viewClassName != 'oscpaypalproxy'
+            $viewClassName != 'oscpaypalproxy' &&
+            $viewClassName != 'makaira_connect_endpoint'
         ) {
             KustomUtils::fullyResetKustomSession();
         }
