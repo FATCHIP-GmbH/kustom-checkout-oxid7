@@ -110,6 +110,7 @@ class KustomOrder extends BaseModel
         }
 
         $sGetChallenge  = Registry::getSession()->getSessionChallengeToken();
+        $rToken = Registry::getSession()->getRemoteAccessToken();
         $sessionId      = Registry::getSession()->getId();
         $this->_aOrderData = array(
             "purchase_country"  => $sCountryISO,
@@ -124,7 +125,7 @@ class KustomOrder extends BaseModel
                 "checkout"     =>
                     $sSSLShopURL . "?cl=KustomExpress$urlShopParam",
                 "confirmation" =>
-                    $sSSLShopURL . "?cl=order$urlShopParam&fnc=execute&kustom_order_id={checkout.order.id}&stoken=$sGetChallenge",
+                    $sSSLShopURL . "?cl=order$urlShopParam&fnc=execute&kustom_order_id={checkout.order.id}&stoken=$sGetChallenge&rtoken=$rToken",
                 "push"         =>
                     $sSSLShopURL . "?cl=KustomAcknowledge$urlShopParam&kustom_order_id={checkout.order.id}",
             );
