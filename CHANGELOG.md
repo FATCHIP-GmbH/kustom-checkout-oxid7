@@ -1,3 +1,8 @@
+### 1.0.5
+* add rtoken to confirmation-call
+* fix multiple orders with the same Kustom order id
+* fix Kustom-portal link
+
 ### 1.0.4
 * fix KCO compatibility issue for PayPal OSC Module v3.5.3
 * add the selected payment method to the order and order confirmation email
