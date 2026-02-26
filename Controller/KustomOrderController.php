@@ -32,6 +32,8 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\UtilsView;
 use VIISON\AddressSplitter\AddressSplitter;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 
 /**
  * Extends default OXID order controller logic.
@@ -286,6 +288,29 @@ class KustomOrderController extends KustomOrderController_parent
     }
 
     /**
+     * Check if an order with the kustom order id already exists in the database. Return true if no order exists or the kustom_order_id parameter is not set.
+     */
+    private function kustomCheckOrderId(): bool
+    {
+        $kustomOrderId = Registry::getRequest()->getRequestParameter('kustom_order_id');
+        if (empty($kustomOrderId)) {
+            return true;
+        }
+
+        /** @var QueryBuilderFactoryInterface $oQueryBuilderFactory */
+        $oQueryBuilderFactory = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class);
+        $oQueryBuilder = $oQueryBuilderFactory->create();
+        $oQueryBuilder
+            ->select('OXID')
+            ->from('oxorder')
+            ->where('FCKUSTOM_ORDERID = :orderId')
+            ->setParameter(':orderId', $kustomOrderId);
+        $orderId = $oQueryBuilder->execute()->fetchOne();
+
+        return empty($orderId);
+    }
+
+    /**
      * Kustom confirmation callback. Calls only parent execute (standard oxid order creation) if not kustom_checkout
      * @return string
      * @throws StandardException
@@ -302,6 +327,11 @@ class KustomOrderController extends KustomOrderController_parent
              */
             if($this->_oUser || $this->getUser()){
                 Registry::getSession()->setVariable('sDelAddrMD5', $this->getDeliveryAddressMD5());
+            }
+
+            if (!$this->kustomCheckOrderId()) {
+                Registry::getLogger()->error("KustomOrderController::execute - order " . Registry::getRequest()->getRequestParameter('kustom_order_id') . " already exists");
+                return 'thankyou';
             }
 
             if (!Registry::getSession()->checkSessionChallenge()) {
@@ -476,8 +506,8 @@ class KustomOrderController extends KustomOrderController_parent
             $kcoId = Registry::getSession()->getVariable('kustom_checkout_order_id');
             $iso = Registry::getSession()->getVariable('sCountryISO');
             $mgmtClient = $this->getKustomMgmtClient($iso);
-            $klarnaOrder = $mgmtClient->getOrder($kcoId);
-            $paymentName = strtolower($klarnaOrder['initial_payment_method']['type']);
+            $kustomOrder = $mgmtClient->getOrder($kcoId);
+            $paymentName = strtolower($kustomOrder['initial_payment_method']['type']);
             $oOrder->oxorder__fckustom_kustompaymentmethod = new Field($paymentName, Field::T_RAW);
         } catch (StandardException $e) {
             $oOrder->oxorder__fckustom_kustompaymentmethod = new Field(self::UNKNOWN_PAYMENT_ID, Field::T_RAW);
