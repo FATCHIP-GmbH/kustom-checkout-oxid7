@@ -19,8 +19,8 @@ use Fatchip\FcKustom\Model\KustomPayment;
 
 class KustomOrders extends AdminDetailsController
 {
-    const KUSTOM_PORTAL_PLAYGROUND_URL = 'https://portal.playground.kustom.co/orders/%s';
-    const KUSTOM_PORTAL_LIVE_URL       = 'https://portal.kustom.co/orders/%s';
+    const KUSTOM_PORTAL_PLAYGROUND_URL = 'https://portal.playground.kustom.co/orders/%s?merchantId=%s';
+    const KUSTOM_PORTAL_LIVE_URL       = 'https://portal.kustom.co/orders/%s?merchantId=%s';
 
     protected $_sThisTemplate = '@fckustom/admin/fckustom_orders';
 
@@ -235,8 +235,9 @@ class KustomOrders extends AdminDetailsController
         }
 
         $orderId = $this->getEditObject()->oxorder__fckustom_orderid->value;
+        $mid     = $this->getEditObject()->oxorder__fckustom_merchantid->value;
 
-        return sprintf($url, $orderId);
+        return sprintf($url, $orderId, $mid);
     }
 
     /**
