@@ -1,3 +1,6 @@
+### 1.1.0
+* fix critical SQL injection vulnerability
+
 ### 1.0.5
 * add rtoken to confirmation-call
 * fix multiple orders with the same Kustom order id
