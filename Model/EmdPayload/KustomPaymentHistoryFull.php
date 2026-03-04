@@ -106,6 +106,7 @@ class KustomPaymentHistoryFull
             $oTableViewNameGenerator = oxNew(TableViewNameGenerator::class);
             $orderTable = $oTableViewNameGenerator->getViewName('oxorder');
 
+            [$queryConditions, $params] = $this->getPaymentQueryConditions($payment, $userId);
             $query = "
               SELECT
                 COUNT({$orderTable}.OXTOTALORDERSUM),
@@ -113,10 +114,10 @@ class KustomPaymentHistoryFull
                 MIN({$orderTable}.OXORDERDATE),
                 MAX({$orderTable}.OXORDERDATE)
                 FROM {$orderTable}
-                WHERE " . $this->getPaymentQueryConditions($payment, $userId);
+                WHERE $queryConditions";
             /** @var \OxidEsales\EshopCommunity\Core\Database\Adapter\Doctrine\Database $oDb */
             $oDb    = oxDb::getDb();
-            $result = $oDb->getRow($query);
+            $result = $oDb->getRow($query, $params);
 
             if ($result[0]) {
 
@@ -138,7 +139,7 @@ class KustomPaymentHistoryFull
      *
      * @param Payment $payment
      * @param string $userId
-     * @return string
+     * @return array{0: string, 1: array<string, string>}
      * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
      */
     protected function getPaymentQueryConditions(Payment $payment, $userId)
@@ -150,20 +151,26 @@ class KustomPaymentHistoryFull
         $oTableViewNameGenerator = oxNew(TableViewNameGenerator::class);
         $orderTable = $oTableViewNameGenerator->getViewName('oxorder');
 
-        $whereCondition = " {$orderTable}.OXUSERID = " . $oDb->quote($userId) .
-                          " AND {$orderTable}.OXPAYMENTTYPE =" . $oDb->quote($payment->getId()) .
+        $whereCondition = " {$orderTable}.OXUSERID = :userId" .
+                          " AND {$orderTable}.OXPAYMENTTYPE = :paymentId" .
                           " AND {$orderTable}.OXSTORNO != 1" . // cancelled orders
-                          " AND {$orderTable}.OXORDERDATE >= '" . $dateBack->format('Y-m-d h:i:s') . "'";
+                          " AND {$orderTable}.OXORDERDATE >= :orderDate";
+        $params = [
+            ':userId' => $userId,
+            ':paymentId' => $payment->getId(),
+            ':orderDate' => $dateBack->format('Y-m-d H:i:s'),
+        ];
 
         if (($st = $this->getSuccessfulOrderStatuses()) && is_array($st)) {
-            $whereCondition .= " AND {$orderTable}.OXTRANSSTATUS IN ('" . implode("','", $st) . "')";
+            $whereCondition .= " AND {$orderTable}.OXTRANSSTATUS IN (:transStatus)";
+            $params[':transStatus'] = $st;
         }
 
         if ($this->isPaymentDateRequired($payment)) {
             $whereCondition .= " AND {$orderTable}.OXPAID != '0000-00-00 00:00:00'";
         };
 
-        return $whereCondition;
+        return [$whereCondition, $params];
     }
 
     /**
