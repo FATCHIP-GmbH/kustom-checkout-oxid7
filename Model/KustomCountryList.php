@@ -20,20 +20,20 @@ class KustomCountryList extends KustomCountryList_parent
     public function loadActiveKustomCheckoutCountries($iLang = null, $filterKcoList = true)
     {
         $sViewName = $this->getCountryViewName($iLang);
-        $isoList   = oxNew(KustomConsts::class)->getKustomGlobalCountries();
-        $isoList   = implode("','", $isoList);
         $sSelect   = "SELECT {$sViewName}.oxid, {$sViewName}.oxtitle, {$sViewName}.oxisoalpha2 FROM {$sViewName}
                       JOIN oxobject2payment 
                       ON oxobject2payment.oxobjectid = {$sViewName}.oxid
                       WHERE oxobject2payment.oxpaymentid = 'kustom_checkout'
                       AND oxobject2payment.oxtype = 'oxcountry'
                       AND {$sViewName}.oxactive=1";
+        $params = [];
 
         if($filterKcoList === true) {
-            $sSelect.= " AND {$sViewName}.oxisoalpha2 IN ('{$isoList}')";
+            $sSelect.= " AND {$sViewName}.oxisoalpha2 IN (:countries)";
+            $params[':countries'] = oxNew(KustomConsts::class)->getKustomGlobalCountries();
         }
 
-        $this->selectString($sSelect);
+        $this->selectString($sSelect, $params);
 
         if(!count($this)) {
             $sSelect = "SELECT {$sViewName}.oxid, {$sViewName}.oxtitle, {$sViewName}.oxisoalpha2 
@@ -52,16 +52,14 @@ class KustomCountryList extends KustomCountryList_parent
     public function loadActiveNonKustomCheckoutCountries($iLang = null)
     {
         $sViewName = $this->getCountryViewName($iLang);
-        $isoList   = oxNew(KustomConsts::class)->getKustomGlobalCountries();
-        $isoList   = implode("','", $isoList);
         $sSelect   = "SELECT oxid, oxtitle, oxisoalpha2 FROM {$sViewName}
                       WHERE oxactive=1 
                       AND (
-                      oxisoalpha2 NOT IN ('{$isoList}')
+                      oxisoalpha2 NOT IN (:countries)
                       OR oxid NOT IN (SELECT oxobjectid FROM oxobject2payment WHERE oxpaymentid = 'kustom_checkout')
                       )
                       ORDER BY oxorder, oxtitle";
-        $this->selectString($sSelect);
+        $this->selectString($sSelect, [':countries' => oxNew(KustomConsts::class)->getKustomGlobalCountries()]);
     }
 
     /**
@@ -71,23 +69,19 @@ class KustomCountryList extends KustomCountryList_parent
     public function loadActiveKCOGlobalCountries($iLang = null)
     {
         $sViewName = $this->getCountryViewName($iLang);
-        $isoList   = oxNew(KustomConsts::class)->getKustomGlobalCountries();
-        $isoList   = implode("','", $isoList);
         $sSelect   = "SELECT {$sViewName}.oxid, {$sViewName}.oxtitle, {$sViewName}.oxisoalpha2 FROM {$sViewName}
                       WHERE {$sViewName}.oxactive=1 
-                      AND {$sViewName}.oxisoalpha2 IN ('{$isoList}')";
-        $this->selectString($sSelect);
+                      AND {$sViewName}.oxisoalpha2 IN (:countries)";
+        $this->selectString($sSelect, [':countries' => oxNew(KustomConsts::class)->getKustomGlobalCountries()]);
     }
 
     public function getKustomCountriesTitles($iLang)
     {
         $sViewName = $this->getCountryViewName($iLang);
-        $isoList   = oxNew(KustomConsts::class)->getKustomCoreCountries();
-        $isoList   = implode("','", $isoList);
         $sSelect   = "SELECT {$sViewName}.oxisoalpha2, {$sViewName}.oxtitle FROM {$sViewName}
-            WHERE {$sViewName}.oxisoalpha2 IN ('{$isoList}')";
+            WHERE {$sViewName}.oxisoalpha2 IN (:countries)";
 
-        $this->selectString($sSelect);
+        $this->selectString($sSelect, [':countries' => oxNew(KustomConsts::class)->getKustomCoreCountries()]);
         $result = array();
         foreach($this as $country) {
             $result[$country->oxcountry__oxisoalpha2->value] = $country->oxcountry__oxtitle->value;
@@ -98,20 +92,19 @@ class KustomCountryList extends KustomCountryList_parent
 
     public function loadActiveKustomCountriesByPaymentId($paymentId)
     {
-        $paymentId = DatabaseProvider::getDb()->quote($paymentId);
         $sViewName = $this->getCountryViewName();
-        $isoList   = oxNew(KustomConsts::class)->getKustomGlobalCountries();
-        $isoList   = implode("','", $isoList);
         $sSelect   = "SELECT {$sViewName}.oxid, {$sViewName}.oxtitle, {$sViewName}.oxisoalpha2 FROM {$sViewName}
                       JOIN oxobject2payment 
                       ON oxobject2payment.oxobjectid = {$sViewName}.oxid
-                      WHERE oxobject2payment.oxpaymentid = {$paymentId}
+                      WHERE oxobject2payment.oxpaymentid = :paymentId
                       AND oxobject2payment.oxtype = 'oxcountry'
-                      AND {$sViewName}.oxactive=1";
+                      AND {$sViewName}.oxactive = 1
+                      AND {$sViewName}.oxisoalpha2 IN (:countries)";
 
-        $sSelect.= " AND {$sViewName}.oxisoalpha2 IN ('{$isoList}')";
-
-        $this->selectString($sSelect);
+        $this->selectString($sSelect, [
+            ':paymentId' => $paymentId,
+            ':countries' => oxNew(KustomConsts::class)->getKustomGlobalCountries()
+        ]);
     }
 
     protected function getCountryViewName($iLang = null)
