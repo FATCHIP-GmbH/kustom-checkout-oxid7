@@ -136,10 +136,10 @@ class KustomBaseConfig extends ShopConfiguration
         $config = Registry::getConfig();
         $sql = "DELETE 
                 FROM oxconfig
-                WHERE oxvarname IN ('" . implode("','", $aKeys) . "')
-                AND oxshopid = '{$config->getShopId()}'";
+                WHERE oxvarname IN (:keys)
+                AND oxshopid = :shopId";
 
-        return $db->execute($sql);
+        return $db->execute($sql, [':keys' => $aKeys, ':shopId' => $config->getShopId()]);
     }
 
     /**

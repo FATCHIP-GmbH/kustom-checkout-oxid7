@@ -590,6 +590,11 @@ class KustomOrderController extends KustomOrderController_parent
         $responseStatus = 'success';
 
         if ($aPost['country']) {
+            if (preg_match('/^[A-Z]{3}$/', $aPost['country']) !== 1) {
+                Registry::getUtils()->showMessageAndExit(
+                    $this->jsonResponse(__FUNCTION__, 'error', 'Invalid country code')
+                );
+            }
 
             $oCountry = oxNew(Country::class);
             $sSql     = $oCountry->buildSelectString(array('oxisoalpha3' => $aPost['country']));
@@ -752,9 +757,6 @@ class KustomOrderController extends KustomOrderController_parent
         $paymentId = Registry::get(Request::class)->getRequestEscapedParameter('payment_id');
         if (!$orderId || !$paymentId || !$this->isActivePayment($paymentId)) {
 
-            var_dump($orderId);
-            var_dump($paymentId);
-            var_dump($this->isActivePayment($paymentId));
             Registry::get(UtilsView::class)->addErrorToDisplay('KUSTOM_WENT_WRONG_TRY_AGAIN', false, true);
             Registry::getUtils()->redirect($this->selfUrl, true, 302);
 

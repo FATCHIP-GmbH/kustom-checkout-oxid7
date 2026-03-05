@@ -85,8 +85,8 @@ class KustomGeneral extends KustomBaseConfig
         $sql = "SELECT oxvarname
                 FROM oxconfig 
                 WHERE oxvarname LIKE 'aKustomCreds_%'
-                AND oxshopid = '{$config->getShopId()}'";
-        $aCountrySpecificCredsConfigKeys = $db->getCol($sql);
+                AND oxshopid = :shopId";
+        $aCountrySpecificCredsConfigKeys = $db->getCol($sql, [':shopId' => $config->getShopId()]);
 
         if (is_array($nestedArray)) {
             foreach ($nestedArray as $key => $arr) {
@@ -118,16 +118,14 @@ class KustomGeneral extends KustomBaseConfig
         }
         $oTableViewNameGenerator = oxNew(TableViewNameGenerator::class);
         $sViewName = $oTableViewNameGenerator->getViewName('oxcountry');
-        $isoList   = oxNew(KustomConsts::class)->getKustomCoreCountries();
-
         /** @var \OxidEsales\EshopCommunity\Core\Database\Adapter\Doctrine\Database $db */
         $db  = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
-        $sql = 'SELECT oxisoalpha2, oxtitle 
-                FROM ' . $sViewName . ' 
-                WHERE oxisoalpha2 IN ("' . implode('","', $isoList) . '") AND oxactive = \'1\'';
+        $sql = "SELECT oxisoalpha2, oxtitle 
+                FROM {$sViewName} 
+                WHERE oxisoalpha2 IN (:countries) AND oxactive = '1'";
 
         /** @var \OxidEsales\EshopCommunity\Core\Database\Adapter\Doctrine\ResultSet $oResult */
-        $oResult = $db->select($sql);
+        $oResult = $db->select($sql, [':countries' => oxNew(KustomConsts::class)->getKustomCoreCountries()]);
         foreach($oResult->getIterator() as $aCountry){
             $this->_aKustomCountries[$aCountry['OXISOALPHA2']] = $aCountry['OXTITLE'];
         }
