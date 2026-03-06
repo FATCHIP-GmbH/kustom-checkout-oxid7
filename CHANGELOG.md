@@ -1,3 +1,8 @@
+### 1.1.1
+* remove dead Kustom Instant Basket feature
+* remove unused curls
+* security hardening
+
 ### 1.1.0
 * fix critical SQL injection vulnerability
 
