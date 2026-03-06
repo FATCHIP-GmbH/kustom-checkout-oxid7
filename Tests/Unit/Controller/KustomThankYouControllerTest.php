@@ -12,7 +12,6 @@ use Fatchip\FcKustom\Controller\KustomThankYouController;
 use Fatchip\FcKustom\Core\KustomCheckoutClient;
 use Fatchip\FcKustom\Core\Exception\KustomClientException;
 use Fatchip\FcKustom\Core\Exception\KustomWrongCredentialsException;
-use Fatchip\FcKustom\Model\KustomInstantBasket;
 use Fatchip\FcKustom\Tests\Unit\ModuleUnitTestCase;
 
 /**
@@ -31,8 +30,7 @@ class KustomThankYouControllerTest extends ModuleUnitTestCase
         $oBasket->expects($this->once())->method('getProductsCount')->will($this->returnValue(1));
         $oBasket->expects($this->once())->method('getOrderId')->will($this->returnValue(1));
 
-        $controller = $this->getMockBuilder(KustomThankYouController::class)->
-        setMethods(['getNewKustomInstantBasket'])->getMock();
+        $controller = $this->getMockBuilder(KustomThankYouController::class)->getMock();
 
         $this->setProtectedClassProperty($controller, '_oBasket', $oBasket);
 

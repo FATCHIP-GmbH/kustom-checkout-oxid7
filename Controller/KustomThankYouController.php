@@ -9,7 +9,6 @@ use Fatchip\FcKustom\Core\KustomUtils;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
 use Fatchip\FcKustom\Core\Exception\KustomClientException;
-use Fatchip\FcKustom\Model\KustomInstantBasket;
 
 /**
  * Class KustomThankYouController

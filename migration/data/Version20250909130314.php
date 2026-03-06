@@ -102,21 +102,6 @@ final class Version20250909130314 extends AbstractMigration
             ");
         }
 
-        if (!$schema->hasTable('fckustom_instant_basket')) {
-            $this->addSql("
-                CREATE TABLE `fckustom_instant_basket` (
-                    `OXID` VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
-                    `BASKET_INFO` MEDIUMBLOB,
-                    `STATUS`  VARCHAR(32) NOT NULL DEFAULT 'OPENED',
-                    `TYPE` VARCHAR(32) NOT NULL DEFAULT '',
-                    `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp',
-                    PRIMARY KEY (`OXID`)
-                )
-                ENGINE = InnoDB
-                DEFAULT CHARSET = utf8;
-            ");
-        }
-
         if (!$schema->hasTable('fckustom_authtokens')) {
             $this->addSql("
                 CREATE TABLE `fckustom_authtokens` (
