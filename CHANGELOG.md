@@ -1,3 +1,6 @@
+### 1.1.2
+* fix id not being set during user exists check if user is fake
+
 ### 1.1.1
 * remove dead Kustom Instant Basket feature
 * remove unused curls
