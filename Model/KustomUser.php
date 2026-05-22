@@ -507,9 +507,13 @@ class KustomUser extends KustomUser_parent
             $database = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC);
             $query = "select {$this->_sExistKey} from {$viewName} where {$this->_sExistKey} = :oxid";
 
-            return (bool) $database->getOne($query, [
-                ':oxid' => $sOXID
-            ]);
+            if ($database->getOne($query, [':oxid' => $sOXID])) {
+                $this->setId($sOXID);
+
+                return true;
+            }
+
+            return false;
         }
 
         return parent::exists($sOXID);
