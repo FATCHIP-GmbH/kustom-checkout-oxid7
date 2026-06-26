@@ -1,3 +1,6 @@
+### 1.1.3
+* fix order::execute failing (e.g. due to missing toc acceptance) causing a redirect to the homepage
+
 ### 1.1.2
 * fix id not being set during user exists check if user is fake
 
