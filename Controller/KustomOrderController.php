@@ -919,7 +919,7 @@ class KustomOrderController extends KustomOrderController_parent
 
         $template = parent::render();
 
-        if (!Registry::getRequest()->getRequestParameter("kcoreloaded")) {
+        if (!Registry::getRequest()->getRequestParameter("kcoreloaded") && (empty(Registry::getRequest()->getRequestParameter('fnc')) || Registry::getRequest()->getRequestParameter('fnc')=="kustomExternalPayment")) {
             $queryString = $_SERVER['QUERY_STRING'];
             Registry::getUtils()->redirect(Registry::getConfig()->getShopSecureHomeUrl() . $queryString . "&kcoreloaded=1", false);
         }
