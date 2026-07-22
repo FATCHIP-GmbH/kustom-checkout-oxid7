@@ -30,13 +30,6 @@ class KustomStart extends KustomBaseConfig
         $this->setEditObjectId($sShopOXID);
 
         parent::render();
-        $oCountryList = oxNew(CountryList::class);
-        $oSupportedCountryList = $oCountryList->getKustomCountriesTitles(
-            $this->getViewDataElement('adminlang')
-        );
-
-        $this->addTplParam('countries', $oSupportedCountryList);
-
 
         return $this->_sThisTemplate;
     }
