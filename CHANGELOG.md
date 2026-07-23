@@ -1,3 +1,7 @@
+### 1.1.4
+* cancel OSC PayPal Express session when entering Kustom checkout
+* fix array as query param in CountryList-selections
+
 ### 1.1.3
 * fix order::execute failing (e.g. due to missing toc acceptance) causing a redirect to the homepage
 
