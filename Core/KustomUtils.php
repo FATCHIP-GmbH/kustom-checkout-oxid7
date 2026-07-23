@@ -159,7 +159,7 @@ class KustomUtils
             $sCountryISO = Registry::getSession()->getVariable('sCountryISO');
         }
 
-        if (!$aCredentials = KustomUtils::getShopConfVar('aarrKustomCreds')['aKlarnaCreds_'.$sCountryISO]) {
+        if (!$aCredentials = KustomUtils::getShopConfVar('aarrKustomCreds')['aKustomCreds_'.$sCountryISO]) {
             $aCredentials = array(
                 'mid'      => KustomUtils::getShopConfVar('sKustomMerchantId'),
                 'password' => KustomUtils::getShopConfVar('sKustomPassword'),

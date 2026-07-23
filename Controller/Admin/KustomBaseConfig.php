@@ -122,24 +122,23 @@ class KustomBaseConfig extends ShopConfiguration
     }
 
     /**
-     * @param $aKeys
+     * @param string $sModulSettingsName
+     * @param array $aKeys
      * @return int
      * @throws \OxidEsales\Eshop\Core\Exception\DatabaseConnectionException
      * @throws \OxidEsales\Eshop\Core\Exception\DatabaseErrorException
      * @codeCoverageIgnore
      */
-    protected function removeConfigKeys($aKeys)
+    protected function removeConfigKeys($sModulSettingsName, $aKeys)
     {
-        /** @var Database $db */
-        $db = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
+        $aTmpModulSettings = KustomUtils::getShopConfVar($sModulSettingsName);
+        foreach ($aTmpModulSettings as $key => $value) {
+            if(array_key_exists($key, $aKeys)) {
+                unset($aTmpModulSettings[$key]);
+            }
+        }
 
-        $config = Registry::getConfig();
-        $sql = "DELETE 
-                FROM oxconfig
-                WHERE oxvarname IN (:keys)
-                AND oxshopid = :shopId";
-
-        return $db->execute($sql, [':keys' => $aKeys, ':shopId' => $config->getShopId()]);
+        KustomUtils::saveShopConfVar($sModulSettingsName, $aTmpModulSettings);
     }
 
     /**

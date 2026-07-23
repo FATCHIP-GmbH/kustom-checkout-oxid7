@@ -1,5 +1,6 @@
 ### 1.1.4
 * cancel OSC PayPal Express session when entering Kustom checkout
+* fix country-specific credentials
 * fix array as query param in CountryList-selections
 
 ### 1.1.3

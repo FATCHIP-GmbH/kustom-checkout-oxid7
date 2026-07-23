@@ -70,11 +70,8 @@ class KustomGeneral extends KustomBaseConfig
             return $this->_aKustomCountryCreds;
         }
         $this->_aKustomCountryCreds = array();
-        foreach ($this->getViewDataElement('confaarrs') as $sKey => $serializedArray) {
-            if (strpos($sKey, 'aKustomCreds_') === 0) {
-
+        foreach ($this->getViewDataElement('confaarrs')['aarrKustomCreds'] as $sKey => $serializedArray) {
                 $this->_aKustomCountryCreds[substr($sKey, -2)] = $serializedArray;
-            }
         }
         
         return $this->_aKustomCountryCreds ?: false;
@@ -82,29 +79,24 @@ class KustomGeneral extends KustomBaseConfig
 
     protected function convertNestedParams($nestedArray)
     {
-        /*** get Country Specific Credentials Config Keys for all Kustom Countries ***/
-        $db  = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
-        $config = Registry::getConfig();
-        $sql = "SELECT oxvarname
-                FROM oxconfig 
-                WHERE oxvarname LIKE 'aKustomCreds_%'
-                AND oxshopid = :shopId";
-        $aCountrySpecificCredsConfigKeys = $db->getCol($sql, [':shopId' => $config->getShopId()]);
+        $aCountrySpecificCredsConfigKeys = KustomUtils::getShopConfVar('aarrKustomCreds');
 
         if (is_array($nestedArray)) {
             foreach ($nestedArray as $key => $arr) {
                 if (strpos($key, 'aKustomCreds_') === 0) {
                     /*** remove key from the list if present in POST data ***/
-                    unset($aCountrySpecificCredsConfigKeys[array_search($key, $aCountrySpecificCredsConfigKeys)]);
+                    if(array_key_exists($key, $aCountrySpecificCredsConfigKeys)) {
+                        unset($aCountrySpecificCredsConfigKeys[$key]);
+                    }
                 }
                 /*** serialize all assoc arrays ***/
                 $nestedArray[$key] = $this->aarrayToMultiline($arr);
             }
         }
 
-        if ($aCountrySpecificCredsConfigKeys)
-            /*** drop all keys that was not passed with POST data ***/
-            $this->removeConfigKeys($aCountrySpecificCredsConfigKeys);
+        if ($aCountrySpecificCredsConfigKeys) /*** drop all keys that was not passed with POST data ***/ {
+            $this->removeConfigKeys('aarrKustomCreds', $aCountrySpecificCredsConfigKeys);
+        }
 
         return $nestedArray;
     }
@@ -124,7 +116,8 @@ class KustomGeneral extends KustomBaseConfig
             'oxcountry',
             $this->getViewDataElement('adminlang')
         );
-        $isoList = KustomConsts::getKustomCoreCountries();
+        $kustomConsts = oxNew(KustomConsts::Class);
+        $isoList = $kustomConsts->getKustomCoreCountries();
 
         /** @var QueryBuilderFactoryInterface $oQueryBuilderFactory */
         $oQueryBuilderFactory = $this->getQueryBuilder();
@@ -141,7 +134,6 @@ class KustomGeneral extends KustomBaseConfig
         foreach($aResult as $aCountry){
             $this->_aKustomCountries[$aCountry['OXISOALPHA2']] = $aCountry['OXTITLE'];
         }
-
         return $this->_aKustomCountries;
     }
 
