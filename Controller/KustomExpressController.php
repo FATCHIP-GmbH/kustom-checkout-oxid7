@@ -73,6 +73,8 @@ class KustomExpressController extends FrontendController
         $oBasket         = $oSession->getBasket();
         $this->_oRequest = Registry::get(Request::class);
 
+        $this->ensureNoPayPalExpressSession();
+
         /**
          * Reset Kustom session if flag set by changing user address data in the User Controller earlier.
          */
@@ -92,6 +94,21 @@ class KustomExpressController extends FrontendController
         $oSession->setVariable('paymentid', KustomPaymentHelper::getKustomPaymentsId());
 
         parent::init();
+    }
+
+    /**
+     * Check if we have a running PayPal Express session from the osc_paypal module. Cancel the session if so.
+     * Otherwise, we PayPal Express session data will pollute the Kustom checkout, leading to errors later in the checkout.
+     */
+    private function ensureNoPayPalExpressSession(): void
+    {
+        if (class_exists(\OxidSolutionCatalysts\PayPal\Core\PayPalSession::class)) {
+            if (\OxidSolutionCatalysts\PayPal\Core\PayPalSession::isPayPalExpressOrderActive()) {
+                \OxidSolutionCatalysts\PayPal\Core\PayPalSession::unsetPayPalOrderId();
+                Registry::getSession()->getBasket()->setPayment(null);
+                Registry::getUtilsView()->addErrorToDisplay('FCKUSTOM_PAYPAL_EXPRESS_SESSION_KILLED');
+            }
+        }
     }
 
     /**

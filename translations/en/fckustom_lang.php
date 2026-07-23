@@ -43,12 +43,12 @@ $aLang = array(
     'FCKUSTOM_RESET_COUNTRY'                     => 'Your chosen country: <strong>%s</strong> ',
     'FCKUSTOM_CHANGE_COUNTRY'                    => 'change country',
     'FCKUSTOM_LOGIN_INTO_AMAZON'                 => 'Please click the button below to login into amazon service',
-    'KUSTOM_ORDER_NOT_IN_SYNC'             => '<strong>Warning!</strong> This order\'s data is different on Kustom\'s side. ',
-    'KUSTOM_ORDER_IS_CANCELLED'            => 'Order is cancelled. ',
-    'KUSTOM_SEE_ORDER_IN_PORTAL'           => '<a href="%s" target="_blank" class="alert-link">See this order in the Kustom Portal</a>',
-
-    'KUSTOM_WENT_WRONG_TRY_AGAIN' => 'Something went wrong. Please try again',
-    'KUSTOM_WRONG_URLS_CONFIG'    => 'Configuration error - check terms/cancellation terms settings',
+    'KUSTOM_ORDER_NOT_IN_SYNC'                   => '<strong>Warning!</strong> This order\'s data is different on Kustom\'s side. ',
+    'KUSTOM_ORDER_IS_CANCELLED'                  => 'Order is cancelled. ',
+    'KUSTOM_SEE_ORDER_IN_PORTAL'                 => '<a href="%s" target="_blank" class="alert-link">See this order in the Kustom Portal</a>',
+    'KUSTOM_WENT_WRONG_TRY_AGAIN'                => 'Something went wrong. Please try again',
+    'KUSTOM_WRONG_URLS_CONFIG'                   => 'Configuration error - check terms/cancellation terms settings',
+    'FCKUSTOM_PAYPAL_EXPRESS_SESSION_KILLED'       => 'Your PayPal payment process was cancelled. No money has been collected from PayPal.',
 
     'FCKUSTOM_PLEASE_AGREE_TO_TERMS'            => 'Please agree to Terms and Conditions and Right to Withdrawal for a downloadable item.',
     'FCKUSTOM_ERROR_NOT_ENOUGH_IN_STOCK'        => 'Not enough items of product %s in stock.',
