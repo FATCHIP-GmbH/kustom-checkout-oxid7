@@ -5,10 +5,13 @@ namespace Fatchip\FcKustom\Controller\Admin;
 
 use Fatchip\FcKustom\Core\KustomConsts;
 use Fatchip\FcKustom\Core\KustomUtils;
+use OxidEsales\Eshop\Core\Request;
+use OxidEsales\Eshop\Core\TableViewNameGenerator;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Application\Model\DeliverySetList;
-use OxidEsales\Eshop\Core\TableViewNameGenerator;
 
 /**
  * Class Kustom_Config for module configuration in OXID backend
@@ -117,16 +120,25 @@ class KustomGeneral extends KustomBaseConfig
             return $this->_aKustomCountries;
         }
         $oTableViewNameGenerator = oxNew(TableViewNameGenerator::class);
-        $sViewName = $oTableViewNameGenerator->getViewName('oxcountry');
-        /** @var \OxidEsales\EshopCommunity\Core\Database\Adapter\Doctrine\Database $db */
-        $db  = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
-        $sql = "SELECT oxisoalpha2, oxtitle 
-                FROM {$sViewName} 
-                WHERE oxisoalpha2 IN (:countries) AND oxactive = '1'";
+        $sViewName = $oTableViewNameGenerator->getViewName(
+            'oxcountry',
+            $this->getViewDataElement('adminlang')
+        );
+        $isoList = KustomConsts::getKustomCoreCountries();
 
-        /** @var \OxidEsales\EshopCommunity\Core\Database\Adapter\Doctrine\ResultSet $oResult */
-        $oResult = $db->select($sql, [':countries' => oxNew(KustomConsts::class)->getKustomCoreCountries()]);
-        foreach($oResult->getIterator() as $aCountry){
+        /** @var QueryBuilderFactoryInterface $oQueryBuilderFactory */
+        $oQueryBuilderFactory = $this->getQueryBuilder();
+        $oQueryBuilder = $oQueryBuilderFactory->create();
+        $oQueryBuilder
+            ->select('oxisoalpha2, oxtitle')
+            ->from($sViewName, 'c')
+            ->where('oxisoalpha2 IN ("' . implode('","', $isoList) . '")')
+            ->andWhere('oxactive = :oxactive')
+            ->setParameter(':oxactive', 1);
+        $aResult = $oQueryBuilder->execute();
+        $aResult = $aResult->fetchAllAssociative();
+
+        foreach($aResult as $aCountry){
             $this->_aKustomCountries[$aCountry['OXISOALPHA2']] = $aCountry['OXTITLE'];
         }
 
@@ -155,5 +167,11 @@ class KustomGeneral extends KustomBaseConfig
         $list->selectString($sql);
 
         return $list;
+    }
+
+    protected function getQueryBuilder() {
+        $oContainer = ContainerFactory::getInstance()->getContainer();
+        /** @var QueryBuilderFactoryInterface $oQueryBuilderFactory */
+        return $oContainer->get(QueryBuilderFactoryInterface::class);
     }
 }
