@@ -1,3 +1,6 @@
+### 1.1.5
+* fix external payment using the generated Packstation delivery set
+
 ### 1.1.4
 * cancel OSC PayPal Express session when entering Kustom checkout
 * fix country-specific credentials
