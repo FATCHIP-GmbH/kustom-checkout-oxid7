@@ -766,7 +766,11 @@ class KustomOrderController extends KustomOrderController_parent
         $oSession->setVariable("paymentid", $paymentId);
         $oBasket = $oSession->getBasket();
         // make sure we have the right shipping option
-        $oBasket->setShipping($this->_aOrderData['selected_shipping_option']['id']);
+        $sShippingSetId = $this->_aOrderData['selected_shipping_option']['id'];
+        if (str_starts_with($sShippingSetId, KustomOrder::PACK_STATION_PREFIX)) {
+            $sShippingSetId = substr($sShippingSetId, strlen(KustomOrder::PACK_STATION_PREFIX));
+        }
+        $oBasket->setShipping($sShippingSetId);
         $oBasket->setPayment($paymentId);
         $oBasket->onUpdate();
 
